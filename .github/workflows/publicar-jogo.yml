@@ -59,6 +59,16 @@ jobs:
       - name: Aplicar aprimoramentos do Teste 60
         run: python3 scripts/patch_teste60.py site/index.html
 
+      - name: Montar arquivo integral do Teste 61 revisado
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat site_parts/part_*.txt > site/index.html
+          test "$(wc -c < site/index.html)" -eq 8329781
+          grep -q "SCENE3_OBSERVE_TEXT" site/index.html
+          grep -q "Teste 61" site/index.html
+          echo "Teste 61 integral pronto para publicacao: $(wc -c < site/index.html) bytes"
+
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
         with:
