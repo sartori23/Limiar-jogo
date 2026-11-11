@@ -156,3 +156,129 @@ s=s.replace('</style>',style+'</style>',1)
 
 path.write_text(s,encoding='utf-8')
 print('Teste 60 preparado:',path, 'bytes:',len(s.encode('utf-8')))
+
+
+# =============================================================
+# TESTE 61 — alterações pontuais sobre a base do Teste 60.
+# Mantém o pacote de arte, cenas, áudio, finais e progressão.
+# =============================================================
+s=path.read_text(encoding='utf-8')
+def r61(old,new):
+    global s
+    count=s.count(old)
+    if count!=1:
+        raise RuntimeError('Teste 61: trecho esperado ausente ou duplicado: '+repr(old[:100])+'; contagem='+str(count))
+    s=s.replace(old,new,1)
+
+s=s.replace('Teste 60','Teste 61').replace('TESTE 60','TESTE 61').replace('Versão 60 ·','Versão 61 ·')
+
+# 1. Cavalete de Meriel — a arte inteira tem colisão.
+r61("{name:'Pintura de Meriel',poly:[[315,956],[337,956],[341,981],[308,982]]}",
+    "{name:'Pintura de Meriel',poly:[[299,900],[357,900],[357,987],[299,987]]}")
+
+# 2. Vaniel se afasta um pouco da pilastra leste.
+r61("{kind:'npc',id:'vaniel',x:747,y:838,name:'Vaniel · nuvens'}",
+    "{kind:'npc',id:'vaniel',x:710,y:838,name:'Vaniel · nuvens'}")
+
+# 3. Porta sul com colisão e passagem acionável pelo interior.
+r61("{name:'Pintura de Meriel',poly:[[299,900],[357,900],[357,987],[299,987]]}\n];",
+    "{name:'Pintura de Meriel',poly:[[299,900],[357,900],[357,987],[299,987]]},\n  {name:'Porta sul do Céu Dourado',poly:[[424,1187],[536,1187],[536,1230],[424,1230]]}\n];")
+# O som de dobradiças/ferro somente toca na saída real.
+r61("function exitScene1(silent=false){\n  if(!scene1Active)return;",
+    "function exitScene1(silent=false){\n  if(!scene1Active)return;\n  if(!silent)playSound('gate-open');")
+
+# 4. Paineis das tres memorias são fisicamente sólidos.
+r61("// Os baús ocupam fisicamente o piso: P pode contorná-los, não atravessá-los.",
+    """// Os paineis possuem colisao sem bloquear o comando de interacao.
+  for(const panel of objs){
+    if(!['memory-portal','memory-portal1','memory-portal3'].includes(panel.kind))continue;
+    if(x+r>panel.x-43&&x-r<panel.x+43&&y+r>panel.y-35&&y-r<panel.y+18)return false;
+  }
+  // Os baús ocupam fisicamente o piso: P pode contorná-los, não atravessá-los.""")
+
+# 5. Duas falas novas de Vaniel antes da citação psicológica.
+r61("d.second],o.id,trigger?startSecretGlitch:null);",
+    """...(o.id==='vaniel'?[
+      '“Agora que eu estou no controle, ninguém pode me parar, a Magistrada faz o que quiser!!!”',
+      '“Essa é minha hora de brilhar, Frase de Efeito!!”'
+    ]:[]),d.second],o.id,trigger?startSecretGlitch:null);""")
+
+# 6. Observação de Marie, Henry e Percival: aparência e personalidade.
+r61("showDialogue(SCENE3_PEOPLE[id].name,['P observa esta figura. Assim como nas outras memórias, ela não percebe sua presença.'],scene3Portrait(id));return;",
+    """const descriptions={
+    marie:[
+      'O vestido vermelho de Marie é delicadamente ornamentado. Sua expressão gentil e a postura acolhedora parecem suavizar a frieza da biblioteca.',
+      'Ela observa o trabalho com o cuidado de uma pesquisadora dedicada. Há algo profundamente familiar nela: a preocupação de uma mãe que pensa em Julie e Dania antes de pensar em si mesma.'
+    ],
+    henry:[
+      'Henry veste um terno preto impecável. O semblante altivo e o modo de se portar sugerem que considera sua própria inteligência acima de qualquer outra.',
+      'Por trás da aparente tranquilidade há um olhar calculista. Narcisista, prepotente e manipulador, ele parece sempre medir como conduzir os outros à sua vontade.'
+    ],
+    percival:[
+      'Percival mantém o traje branco alinhado e uma postura formal. Seu rosto sério mal revela qualquer emoção.',
+      'Seu jeito é metódico, engenhoso e profundamente didático: parece organizar cada ideia com precisão antes de apresentá-la, sem tolerar distrações.'
+    ]
+  };
+  showDialogue(SCENE3_PEOPLE[id].name,descriptions[id],scene3Portrait(id));return;""")
+
+# 7. A parede junto à escada fica sólida, mas a escada caracol deixa
+# de bloquear Pietro ao subir.
+r61("{name:'escada em espiral',poly:[[68,115],[163,111],[213,174],[198,250],[128,267],[83,230]]},",
+    "{name:'parede elevada junto a escada caracol',poly:[[213,141],[401,141],[401,207],[213,207]]},")
+
+# 8. Teclado preso à ombreira da porta, com o ponto de interação alinhado.
+r61('drawPhysicalKeypad(x+131,y-42);','drawPhysicalKeypad(x+111,y-65);')
+r61("{kind:'keypad',id:'keypad',x:center(32,27).x+131,y:center(32,27).y-42,name:'Teclado numérico'}",
+    "{kind:'keypad',id:'keypad',x:center(32,27).x+111,y:center(32,27).y-65,name:'Teclado numérico'}")
+
+# 9. Lumini só se apresenta quando P volta perto do local onde acordou.
+r61('chestEventReady&&!luminiArrivalStarted&&dist(player,spawn)<260)startLuminiArrival();',
+    'chestEventReady&&!luminiArrivalStarted&&dist(player,spawn)<105)startLuminiArrival();')
+
+# 10. Samael: duas pupilas carmesins abrem DURANTE o zoom.
+# Camada vetorial acompanha o enquadramento sem modificar a imagem original.
+r61('<img id="samael-gaze-portrait" class="samael-gaze-portrait" alt="" />',
+    """<img id="samael-gaze-portrait" class="samael-gaze-portrait" alt="" />
+              <svg id="samael-opening-eyes" viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid meet">
+                <defs><filter id="samael-pupil-glow" x="-90%" y="-90%" width="280%" height="280%"><feGaussianBlur stdDeviation="2.6"/></filter></defs>
+                <path d="M142 108 Q160 100 179 108 Q169 119 146 115 Z" fill="#25151e" stroke="#49323f" stroke-width="1.4"/>
+                <path d="M147 110 Q161 106 175 110 Q163 117 148 113 Z" fill="#e1cccf"/>
+                <ellipse cx="161" cy="111" rx="5.1" ry="5.5" fill="#f02031" opacity=".65" filter="url(#samael-pupil-glow)"/>
+                <ellipse cx="161" cy="111" rx="4.3" ry="5" fill="#c71328"/>
+                <ellipse cx="161" cy="111" rx="1.9" ry="3" fill="#0e0307"/>
+                <path d="M199 109 Q211 102 226 107 Q217 118 202 115 Z" fill="#35201c" stroke="#614627" stroke-width="1.3"/>
+                <path d="M203 110 Q214 107 222 109 Q214 116 204 113 Z" fill="#e4b86e"/>
+                <ellipse cx="212" cy="111" rx="5" ry="5.5" fill="#f01c31" opacity=".65" filter="url(#samael-pupil-glow)"/>
+                <ellipse cx="212" cy="111" rx="4" ry="4.7" fill="#c91429"/>
+                <ellipse cx="212" cy="111" rx="1.9" ry="3" fill="#110208"/>
+              </svg>""")
+
+samael_eyes_css="""
+/* Teste 61: olhos abrem durante o zoom, sem substituir o retrato. */
+#glitch-screen.samael-sequence #samael-opening-eyes{
+  position:absolute;left:50%;top:50%;z-index:4;
+  width:min(69%,420px);height:min(88%,420px);
+  overflow:visible;pointer-events:none;image-rendering:pixelated;
+  opacity:0;transform:translate(-50%,-50%) scale(1.01);
+  transform-origin:center 37%;
+  transition:opacity 1.1s ease .28s,transform 6.3s linear;
+}
+#glitch-screen.samael-sequence[data-phase="gaze"] #samael-opening-eyes,
+#glitch-screen.samael-sequence[data-phase="message"] #samael-opening-eyes,
+#glitch-screen.samael-sequence[data-phase="hold"] #samael-opening-eyes,
+#glitch-screen.samael-sequence[data-phase="rupture"] #samael-opening-eyes{
+  opacity:1;transform:translate(-50%,-50%) scale(1.25);
+}
+#glitch-screen.samael-sequence[data-phase="rupture"] #samael-opening-eyes{
+  animation:samael-eye-flicker .115s steps(2,end) 4;
+}
+#glitch-screen.samael-sequence[data-phase="blackout"] #samael-opening-eyes{opacity:0}
+@keyframes samael-eye-flicker{50%{opacity:.2}}
+@media(max-width:620px){#glitch-screen.samael-sequence #samael-opening-eyes{width:min(75%,360px);max-height:80%}}
+@media(prefers-reduced-motion:reduce){#glitch-screen.samael-sequence #samael-opening-eyes{transition:none!important;animation:none!important}}
+"""
+style_position=s.rfind('</style>')
+if style_position<0:raise RuntimeError('Teste 61: bloco CSS nao encontrado')
+s=s[:style_position]+samael_eyes_css+s[style_position:]
+path.write_text(s,encoding='utf-8')
+print('Teste 61 preparado:',path,'bytes:',len(s.encode('utf-8')))
