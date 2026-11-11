@@ -1,0 +1,68 @@
+name: Publicar No Limiar do Finito
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '*.zip'
+      - '.github/workflows/publicar-jogo.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Buscar arquivos do repositorio
+        uses: actions/checkout@v4
+
+      - name: Preparar ultima versao do jogo
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p site
+          python3 - <<'PY'
+          import pathlib, re, zipfile, sys
+          zips = sorted(pathlib.Path('.').glob('No_Limiar_do_Finito_GitHub_Pages_Teste_*.zip'))
+          if not zips:
+              raise SystemExit('Nenhum pacote de jogo foi encontrado.')
+          def version(path):
+              m = re.search(r'Teste_(\d+)\.zip$', path.name)
+              return int(m.group(1)) if m else -1
+          chosen = max(zips, key=version)
+          print(f'Publicando {chosen.name}')
+          with zipfile.ZipFile(chosen) as archive:
+              if 'index.html' not in archive.namelist():
+                  raise SystemExit('O pacote precisa conter um index.html.')
+              for filename in ('index.html', '.nojekyll'):
+                  if filename in archive.namelist():
+                      pathlib.Path('site', filename).write_bytes(archive.read(filename))
+          index = pathlib.Path('site/index.html')
+          if not index.is_file() or index.stat().st_size < 100:
+              raise SystemExit('index.html ausente ou vazio.')
+          pathlib.Path('site/.nojekyll').touch()
+          print(f'index.html pronto: {index.stat().st_size} bytes')
+          PY
+
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Enviar jogo para publicacao
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+
+      - name: Publicar GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
