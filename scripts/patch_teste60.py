@@ -282,3 +282,109 @@ if style_position<0:raise RuntimeError('Teste 61: bloco CSS nao encontrado')
 s=s[:style_position]+samael_eyes_css+s[style_position:]
 path.write_text(s,encoding='utf-8')
 print('Teste 61 preparado:',path,'bytes:',len(s.encode('utf-8')))
+
+
+# ============================================================
+# REVISAO FINAL DO TESTE 61 - COLISOES E OBSERVACAO
+# Correcoes solicitadas depois da primeira publicacao do Teste 61.
+# Sao feitas sobre o HTML gerado; todo o resto permanece intacto.
+# ============================================================
+s = path.read_text(encoding='utf-8')
+def revisa(old, new, label):
+    global s
+    if old in s:
+        s=s.replace(old,new,1)
+        print('[61 revisao] OK:',label)
+    elif new in s:
+        print('[61 revisao] ja atualizado:',label)
+    else:
+        print('[61 revisao] nao localizado:',label)
+
+# Reverter a sobreposicao dos olhos artificiais de Samael; o retrato
+# original e o zoom permanecem como antes.
+s=s.replace('</style>', '\n#samael-opening-eyes{display:none!important}\n</style>', 1)
+s=re.sub(r'\s*<svg id="samael-opening-eyes"[\s\S]*?</svg>', '', s, count=1)
+
+# Ajustar area de contato dos quatro anjos, sem bloquear suas interacoes.
+revisa("for(const a of SCENE1_ANGELS)if(Math.hypot(x-a.x,y-a.y)<r+18)return false;",
+       "for(const a of SCENE1_ANGELS)if(Math.hypot(x-a.x,y-a.y)<r+24)return false;",
+       'anjos do Ceu Dourado')
+# Contato mais fiel aos tokens da segunda memoria, mantendo as marcas livres.
+revisa("if(Math.hypot(c.x-x,(c.y-5)-y)<21)return false;",
+       "if(Math.hypot(c.x-x,(c.y-5)-y)<25)return false;",
+       'tokens da memoria 2')
+revisa("if(withActors)for(const p of Object.values(SCENE3_PEOPLE))if(Math.hypot(x-p.x,(y-6)-p.y)<25)return false;",
+       "if(withActors)for(const p of Object.values(SCENE3_PEOPLE))if(Math.hypot(x-p.x,(y-6)-p.y)<29)return false;",
+       'tokens da biblioteca')
+
+# Remover a area de colisao excessiva de uma parede junto a escada.
+# Substituir por corrimoes e fechamentos finos; o miolo da escada
+# caracol continua transitavel para que P possa subir no futuro.
+revisa("{name:'parede elevada junto a escada caracol',poly:[[213,141],[401,141],[401,207],[213,207]]},",
+       """{name:'corrimão superior esquerdo',poly:[[110,306],[440,306],[440,335],[110,335]]},
+  {name:'corrimão superior direito',poly:[[516,306],[847,306],[847,335],[516,335]]},
+  {name:'fechamento de parede superior esquerdo',poly:[[78,135],[107,135],[107,338],[78,338]]},
+  {name:'fechamento de parede superior direito',poly:[[850,135],[882,135],[882,338],[850,338]]},""",
+       'corrimao e paredes da biblioteca')
+revisa("{name:'escada em espiral',poly:[[68,115],[163,111],[213,174],[198,250],[128,267],[83,230]]},",
+       """{name:'corrimão superior esquerdo',poly:[[110,306],[440,306],[440,335],[110,335]]},
+  {name:'corrimão superior direito',poly:[[516,306],[847,306],[847,335],[516,335]]},
+  {name:'fechamento de parede superior esquerdo',poly:[[78,135],[107,135],[107,338],[78,338]]},
+  {name:'fechamento de parede superior direito',poly:[[850,135],[882,135],[882,338],[850,338]]},""",
+       'escada livre e corrimao')
+
+# Identidade desconhecida durante a observacao; nao alterar os
+# nomes internos, as pistas ou os textos dos livros.
+const_scene3 = """const SCENE3_OBSERVE_REV={
+ marie:'A figura veste roupas em tons avermelhados e escuros, com ornamentação delicada. Sua expressão e a postura acolhedora sugerem uma pessoa gentil, atenciosa e dedicada.',
+ henry:'A presença usa um traje escuro impecável e mantém a cabeça erguida. O olhar seguro e a postura rígida parecem transmitir orgulho, frieza e desejo de controle.',
+ percival:'A figura mantém o traje branco alinhado e uma postura muito formal. Seu rosto sério mal revela emoção; sua expressão transmite precisão, disciplina e distanciamento.'
+};
+"""
+revisa("function scene3Choose(choice){", const_scene3+"function scene3Choose(choice){", 'mensagens de observacao da biblioteca')
+revisa("showDialogue(SCENE3_PEOPLE[id].name,descriptions[id],scene3Portrait(id));return;",
+       "showDialogue('???',[SCENE3_OBSERVE_REV[id]],scene3Portrait(id));return;",
+       'observar presenca - biblioteca')
+revisa("showDialogue(SCENE3_PEOPLE[id].name,['P observa esta figura. Assim como nas outras memórias, ela não percebe sua presença.'],scene3Portrait(id));return;",
+       "showDialogue('???',[SCENE3_OBSERVE_REV[id]],scene3Portrait(id));return;",
+       'observacao original - biblioteca')
+revisa("name:people[0][1].name", "name:'???'", 'rotulo da biblioteca')
+# A segunda ocorrencia se encontra no mesmo bloco em algumas versoes.
+s=s.replace("name:people[0][1].name","name:'???'")
+revisa("$('scene3-action-title').textContent=SCENE3_PEOPLE[id].name;",
+       "$('scene3-action-title').textContent='???';", 'menu da biblioteca')
+revisa("showDialogue(SCENE3_PEOPLE[id].name,research.comment,scene3Portrait(id),()=>{",
+       "showDialogue('???',research.comment,scene3Portrait(id),()=>{", 'nome oculto nos comentarios')
+
+const_scene2 = """const SCENE2_OBSERVE_REV={
+ andreas:'A figura tem porte robusto e expressão marcada, com o aspecto de alguém acostumado ao esforço e ao perigo. A postura transmite resistência e determinação.',
+ johana:'A presença ruiva, de jaqueta e roupa marcante, mantém um ar despreocupado. Sua expressão sugere irreverência, ousadia e uma energia difícil de conter.',
+ niklaus:'A figura ruiva usa capuz e mantém o semblante fechado. A postura contida e o olhar atento dão a impressão de alguém reservado e difícil de compreender.',
+ omega:'A presença de cabelo curto e roupas escuras permanece firme e decidida. A expressão intensa sugere uma pessoa direta, impetuosa e pouco hesitante.'
+};
+"""
+revisa("function scene2Choose(which){",const_scene2+"function scene2Choose(which){",'mensagens de observacao da memoria 2')
+revisa("showDialogue(SCENE2_CAST[id].name,SCENE2_CAST[id].lines,id);",
+       "showDialogue('???',[SCENE2_OBSERVE_REV[id]],id);",
+       'observar presenca - memoria 2')
+revisa("$('scene2-action-title').textContent=SCENE2_CAST[id].name;",
+       "$('scene2-action-title').textContent='???';$('scene2-listen').textContent='1 · OBSERVAR PRESENÇA';",
+       'menu da memoria 2')
+revisa("name:near.name+' · ouvir / conduzir'",
+       "name:'??? · observar / conduzir'",'rotulo da memoria 2')
+revisa("name:'Soltar '+mine.name",
+       "name:'Soltar ???'",'soltar eco sem identificar')
+revisa("toast(c.name+' tornou-se um eco à sua frente. Leve-o até uma marca e pressione E.',3.2);",
+       "toast('A presença tornou-se um eco à sua frente. Leve-a até uma marca e pressione E.',3.2);",
+       'mensagem do eco')
+
+# Reduzir vazamentos de estado de transparencia entre os sprites sem
+# alterar suas artes, posicoes, a trilha ou os eventos.
+revisa("if(im?.naturalWidth)g.drawImage(im,Math.round(p.x-p.w/2),y-p.h,p.w,p.h);",
+       "if(im?.naturalWidth){g.save();g.globalAlpha=1;g.globalCompositeOperation='source-over';g.imageSmoothingEnabled=false;g.drawImage(im,Math.round(p.x-p.w/2),y-p.h,p.w,p.h);g.restore();}",
+       'render dos personagens da biblioteca')
+revisa("g.globalAlpha=.92;g.drawImage(im,Math.round(x-SCENE2_TOKEN_WIDTH/2),Math.round(y-SCENE2_TOKEN_HEIGHT+bob),SCENE2_TOKEN_WIDTH,SCENE2_TOKEN_HEIGHT);g.globalAlpha=1;",
+       "g.save();g.globalCompositeOperation='source-over';g.globalAlpha=.92;g.imageSmoothingEnabled=false;g.drawImage(im,Math.round(x-SCENE2_TOKEN_WIDTH/2),Math.round(y-SCENE2_TOKEN_HEIGHT+bob),SCENE2_TOKEN_WIDTH,SCENE2_TOKEN_HEIGHT);g.restore();g.globalAlpha=1;",
+       'transparencia dos tokens da memoria 2')
+path.write_text(s,encoding='utf-8')
+print('Teste 61 REVISAO FINAL:',path,'bytes:',len(s.encode('utf-8')))
