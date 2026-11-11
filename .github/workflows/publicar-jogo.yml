@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - '*.zip'
+      - 'scripts/patch_teste60.py'
       - '.github/workflows/publicar-jogo.yml'
   workflow_dispatch:
 
@@ -54,6 +55,9 @@ jobs:
           pathlib.Path('site/.nojekyll').touch()
           print(f'index.html pronto: {index.stat().st_size} bytes')
           PY
+
+      - name: Aplicar aprimoramentos do Teste 60
+        run: python3 scripts/patch_teste60.py site/index.html
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
