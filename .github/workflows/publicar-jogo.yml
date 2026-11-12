@@ -11,6 +11,8 @@ on:
       - 'scripts/patch_teste64.py'
       - 'scripts/patch_teste65.py'
       - 'scripts/finale-teste66.js'
+      - 'scripts/soundtrack-teste72.js'
+      - 'scripts/build_soundtrack72.py'
       - 'scripts/make_cantiga_test67.py'
       - '.github/workflows/publicar-jogo.yml'
   workflow_dispatch:
@@ -265,6 +267,37 @@ jobs:
           assert 'stopChaseSound();' in js
           assert '__finaleTest71' in js
           print('Teste 71: cantiga mais alta, fuga musical em 168 BPM e pico sonoro controlado.')
+          PY
+
+      - name: Integrar trilha licenciada aos nove momentos - Teste 72
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp scripts/soundtrack-teste72.js site/soundtrack-teste72.js
+          python3 scripts/build_soundtrack72.py site/soundtrack72
+          node --check site/soundtrack-teste72.js
+          python3 - <<'PY'
+          from pathlib import Path
+          import json
+          base=Path('site')
+          m=json.loads((base/'soundtrack72/manifest.json').read_text(encoding='utf-8'))
+          keys=['menu','limiante','priantes','ceu','cena','biblioteca','lumini','perseguicao','creditos']
+          missing=[k for k in keys if k not in m['available'] or not (base/'soundtrack72'/f'{k}.ogg').exists()]
+          if missing:raise SystemExit('Trilhas ausentes: '+', '.join(missing))
+          p=base/'index.html'
+          html=p.read_text(encoding='utf-8')
+          if html.count('Versão 71 ·')!=1:
+            raise SystemExit('A versão anterior não está no HTML.')
+          if html.count('<script src="finale-teste66.js"></script>')!=1:
+            raise SystemExit('Marcador da cena final ausente.')
+          html=html.replace('Versão 71 ·','Versão 72 ·',1)
+          html=html.replace('PRÓLOGO · TESTE 71 ·','PRÓLOGO · TESTE 72 ·')
+          html=html.replace('<title>No Limiar do Finito — Teste 71','<title>No Limiar do Finito — Teste 72')
+          html=html.replace('<script src="finale-teste66.js"></script>',
+                            '<script src="finale-teste66.js"></script>\n<script src="soundtrack-teste72.js"></script>',1)
+          p.write_text(html,encoding='utf-8')
+          print('TESTE 72 OK: '+', '.join(m['available']))
+          print('Proteção de direitos: Spare Hearts não é incorporada sem licença.')
           PY
 
       - name: Configurar GitHub Pages
