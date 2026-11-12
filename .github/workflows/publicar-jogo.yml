@@ -6,6 +6,7 @@ on:
     paths:
       - '*.zip'
       - 'scripts/patch_teste60.py'
+      - 'scripts/patch_teste62.py'
       - '.github/workflows/publicar-jogo.yml'
   workflow_dispatch:
 
@@ -68,6 +69,14 @@ jobs:
           grep -q "SCENE3_OBSERVE_TEXT" site/index.html
           grep -q "Teste 61" site/index.html
           echo "Teste 61 integral pronto para publicacao: $(wc -c < site/index.html) bytes"
+
+      - name: Aplicar colisões reais nos tokens dos quatro anjos - Teste 62
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/patch_teste62.py site/index.html
+          grep -q 'Teste 62' site/index.html
+          grep -q "const wingHalf=a.id==='samuel'?40:43" site/index.html
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
