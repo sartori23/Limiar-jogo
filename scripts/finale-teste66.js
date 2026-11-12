@@ -233,6 +233,8 @@
     }
   }
   function chaseMusicBeat(){
+    // Teste 72: se a faixa orquestral licenciada estiver tocando, não sobrepor a batida sintetizada.
+    if(window.__useExternalChaseMusic && window.__limiarSoundtrackPlayingChase){stopChaseSound();return;}
     if(!FINALE.active || (FINALE.phase!=='fear'&&FINALE.phase!=='chase')){
       stopChaseSound();return;
     }
