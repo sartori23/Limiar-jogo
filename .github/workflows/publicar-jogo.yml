@@ -7,6 +7,7 @@ on:
       - '*.zip'
       - 'scripts/patch_teste60.py'
       - 'scripts/patch_teste62.py'
+      - 'scripts/patch_teste63.py'
       - '.github/workflows/publicar-jogo.yml'
   workflow_dispatch:
 
@@ -77,6 +78,16 @@ jobs:
           python3 scripts/patch_teste62.py site/index.html
           grep -q 'Teste 62' site/index.html
           grep -q "const wingHalf=a.id==='samuel'?40:43" site/index.html
+
+      - name: Habilitar interações de Lumini por memória - Teste 63
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/patch_teste63.py
+          python3 scripts/patch_teste63.py site/index.html
+          grep -q "Versão 63" site/index.html
+          grep -q "luminiUnansweredMemories" site/index.html
+          grep -q "luminiMemoryVisited.add" site/index.html
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
