@@ -159,6 +159,40 @@ jobs:
           print('Teste 67: corredor, cantiga original com voz, captura e créditos prontos')
           PY
 
+      - name: Incorporar cantiga humana e encontro final - Teste 68
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error --retry 3 --max-time 35 \
+            --user-agent 'Mozilla/5.0 (No Limiar do Finito)' \
+            -o site/lullaby-human68-source.mp3 \
+            'https://cdn.freesound.org/previews/511/511086_10086928-hq.mp3'
+          test "$(wc -c < site/lullaby-human68-source.mp3)" -gt 20000
+          ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1 site/lullaby-human68-source.mp3
+          ffmpeg -hide_banner -loglevel error -nostdin -y \
+            -i site/lullaby-human68-source.mp3 \
+            -af "asetrate=44100*0.78,aresample=44100,aecho=0.7:0.5:220:0.22,lowpass=f=1700,volume=1.18" \
+            -c:a libvorbis -q:a 5 site/hush-human68.ogg
+          test "$(wc -c < site/hush-human68.ogg)" -gt 12000
+          rm site/lullaby-human68-source.mp3
+          node --check site/finale-teste66.js
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('site/index.html')
+          s=p.read_text(encoding='utf-8')
+          assert s.count('Versão 67 ·')==1
+          s=s.replace('Versão 67 ·','Versão 68 ·',1)
+          s=s.replace('PRÓLOGO · TESTE 67 ·','PRÓLOGO · TESTE 68 ·')
+          s=s.replace('<title>No Limiar do Finito — Teste 67','<title>No Limiar do Finito — Teste 68')
+          p.write_text(s,encoding='utf-8')
+          js=Path('site/finale-teste66.js').read_text(encoding='utf-8')
+          assert 'hush-human68.ogg' in js
+          assert 'Você não deveria estar aqui.' in js
+          assert 'Ainda não é hora de acordar.' in js
+          assert '__finaleTest68' in js
+          print('Teste 68: audio humano CC0, corredor longo, confronto, captura e creditos verificados')
+          PY
+
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
         with:
