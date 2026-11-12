@@ -193,6 +193,31 @@ jobs:
           print('Teste 68: audio humano CC0, corredor longo, confronto, captura e creditos verificados')
           PY
 
+      - name: Publicar dialogo final classico e tela preta - Teste 69
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check site/finale-teste66.js
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('site/index.html')
+          s=p.read_text(encoding='utf-8')
+          assert s.count('Versão 68 ·')==1, 'Versao 68 ausente'
+          s=s.replace('Versão 68 ·','Versão 69 ·',1)
+          s=s.replace('PRÓLOGO · TESTE 68 ·','PRÓLOGO · TESTE 69 ·')
+          s=s.replace('<title>No Limiar do Finito — Teste 68','<title>No Limiar do Finito — Teste 69')
+          p.write_text(s,encoding='utf-8')
+          js=Path('site/finale-teste66.js').read_text(encoding='utf-8')
+          assert "showDialogue('???',['Você não deveria estar aqui.'],'lantern_man'" in js
+          assert 'speechSynthesis' not in js, 'Fala sintetizada indevida'
+          assert 'Ainda não é hora de acordar.' in js
+          assert 'size=400+t*500' not in js, 'Zoom indevido'
+          assert "if(player.y<5600)" in js, 'Cantiga precisa iniciar mais cedo'
+          assert "FINALE.endingAt=gameTime;FINALE.creditsReached=false;setState('final-end');" in js
+          assert '__finaleTest69' in js
+          print('Teste 69 confirmado: fala por texto, cancao prolongada, tela preta e creditos')
+          PY
+
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
         with:
