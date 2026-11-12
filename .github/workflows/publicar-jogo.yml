@@ -154,7 +154,7 @@ jobs:
           html=html.replace('<title>No Limiar do Finito — Teste 66','<title>No Limiar do Finito — Teste 67')
           p.write_text(html,encoding='utf-8')
           js=Path('site/finale-teste66.js').read_text(encoding='utf-8')
-          assert 'final-credits-screen' in js and 'cantiga-67.ogg' in js
+          assert 'final-credits-screen' in js and 'hush-human68.ogg' in js
           assert 'data:image/png;base64,' in js
           print('Teste 67: corredor, cantiga original com voz, captura e créditos prontos')
           PY
