@@ -400,7 +400,16 @@
     hint.classList.remove('visible');songCaption.classList.remove('visible');mobileRun.classList.remove('visible');
     return oldRetry(full);
   };
-  interact=function(){if(FINALE.active)return;return oldInteract();};
+  interact=function(){
+    if(FINALE.active){
+      if(state==='dialog')return nextDialogue();
+      return;
+    }
+    return oldInteract();
+  };
+  document.getElementById('dialog-screen').addEventListener('click',()=>{
+    if(FINALE.active&&state==='dialog')nextDialogue();
+  });
   inventory=function(){if(FINALE.active)return;return oldInventory();};
   showMap=function(){if(FINALE.active)return;return oldShowMap();};
   // Útil também para testes automatizados, sem atalho exposto ao jogador.
