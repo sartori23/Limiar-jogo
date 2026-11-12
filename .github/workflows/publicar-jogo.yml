@@ -9,6 +9,7 @@ on:
       - 'scripts/patch_teste62.py'
       - 'scripts/patch_teste63.py'
       - 'scripts/patch_teste64.py'
+      - 'scripts/patch_teste65.py'
       - '.github/workflows/publicar-jogo.yml'
   workflow_dispatch:
 
@@ -98,6 +99,17 @@ jobs:
           python3 scripts/patch_teste64.py site/index.html
           grep -q "O tempo leva tudo. Até mesmo aquilo que acreditávamos ser eterno." site/index.html
           grep -q "Versão 64" site/index.html
+
+      - name: Mostrar nomes apenas apos Lumini revelar cada memoria - Teste 65
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/patch_teste65.py
+          python3 scripts/patch_teste65.py site/index.html
+          grep -q "Versão 65" site/index.html
+          grep -q "function scene1DisplayName" site/index.html
+          grep -q "function scene2DisplayName(id)" site/index.html
+          grep -q "function scene3DisplayName(id)" site/index.html
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
