@@ -5,7 +5,7 @@ Os arquivos não encontrados são omitidos com aviso; síntese original segue co
 """
 from pathlib import Path
 from urllib.request import Request, urlopen
-import zipfile, subprocess, tempfile, os, io, sys
+import zipfile, subprocess, tempfile, os, io, sys, json
 
 OUT=Path(sys.argv[1] if len(sys.argv)>1 else "site/soundtrack72")
 OUT.mkdir(parents=True,exist_ok=True)
@@ -100,6 +100,7 @@ for key, urls in SOURCES.items():
     os.unlink(tmp)
 
 (OUT/'manifest.txt').write_text('Disponíveis: '+', '.join(success)+'\nIndisponíveis: '+', '.join(failures)+'\nCC0/CC BY 4.0, fontes nos créditos do jogo.\n',encoding='utf-8')
+(OUT/'manifest.json').write_text(json.dumps({'available':success,'unavailable':failures},ensure_ascii=False),encoding='utf-8')
 print('SUCESSO',success,flush=True)
 print('INACESSÍVEIS',failures,flush=True)
 if not all(x in success for x in ['ceu','perseguicao','creditos']):
