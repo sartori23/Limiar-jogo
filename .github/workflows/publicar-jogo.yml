@@ -13,6 +13,9 @@ on:
       - 'scripts/finale-teste66.js'
       - 'scripts/soundtrack-teste72.js'
       - 'scripts/build_soundtrack72.py'
+      - 'scripts/priante_atlas73.b64'
+      - 'scripts/priante-teste73.js'
+      - 'scripts/patch_teste73.py'
       - 'scripts/make_cantiga_test67.py'
       - '.github/workflows/publicar-jogo.yml'
   workflow_dispatch:
@@ -299,6 +302,28 @@ jobs:
           print('TESTE 72 OK: '+', '.join(m['available']))
           print('Proteção de direitos: Spare Hearts não é incorporada sem licença.')
           PY
+
+      - name: Integrar os novos Priantes e recuperar as falas - Teste 73
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p site
+          base64 --decode scripts/priante_atlas73.b64 > site/priante73.webp
+          test "$(wc -c < site/priante73.webp)" -ge 3000
+          python3 - <<'PY'
+          from pathlib import Path
+          f=Path('site/priante73.webp').read_bytes()
+          assert f[:4]==b'RIFF' and f[8:12]==b'WEBP', 'Atlas inválido'
+          print('Atlas WEBP verificado: '+str(len(f))+' bytes')
+          PY
+          cp scripts/priante-teste73.js site/priante-teste73.js
+          node --check site/priante-teste73.js
+          python3 -m py_compile scripts/patch_teste73.py
+          python3 scripts/patch_teste73.py site/index.html
+          grep -q "Versão 73" site/index.html
+          grep -q "priante-teste73.js" site/index.html
+          grep -q "SCENE2_CAST\[id\]?.lines" site/index.html
+          echo "Teste 73: Priantes animados e falas da Cena Incompleta preservadas."
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
