@@ -1,0 +1,41 @@
+name: Verificar acesso à cantiga humana CC0
+
+on:
+  push:
+    paths:
+      - '.github/workflows/probe-audio68.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Buscar previa publica e registrar diagnósticos
+        run: |
+          python3 - <<'PY'
+          import urllib.request,urllib.parse,json,re
+          sites=[
+            'https://freesound.org/people/TheGloomWorker/sounds/511086/',
+            'https://freesound.org/embed/sound/iframe/511086/simple/medium/',
+            'https://pixabay.com/sound-effects/horror-hush-little-baby-65421/',
+            'https://api.openverse.org/v1/audio/?q=Hush%20Little%20Baby&license=cc0&source=freesound',
+          ]
+          for url in sites:
+            print('BEGIN',url,flush=True)
+            try:
+              req=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0 (compatible; LimiarPrologo/1.0)'})
+              with urllib.request.urlopen(req,timeout=16) as r: data=r.read(1600000).decode('utf-8','replace')
+              print('downloaded chars',len(data))
+              candidates=re.findall(r'[^"\'<>\s]{0,160}(?:previews/511/511086|\.mp3|audio/2022/)[^"\'<>\s]{0,180}',data,re.I)
+              print('audio candidate count',len(candidates))
+              for c in candidates[:10]:print('CANDIDATE',c[:330])
+              if 'openverse.org' in url:
+                try:
+                  j=json.loads(data)
+                  for x in j.get('results',[])[:7]:print('RESULT',x.get('title'),x.get('url'),x.get('foreign_landing_url'),x.get('license'))
+                except Exception as ex:print('JSON issue',ex)
+            except Exception as ex:print('PROBE ERROR',repr(ex))
+          PY
