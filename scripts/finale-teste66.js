@@ -1,4 +1,4 @@
-/* Teste 68 — o corredor além da Grande Porta.
+/* Teste 69 — o corredor além da Grande Porta.
    Cena autocontida: não altera memórias, senhas ou objetos do Limiante. */
 (() => {
   'use strict';
@@ -13,7 +13,7 @@
 
   // Hush Little Baby.mp3: performance humana de TheGloomWorker, CC0 no Freesound.
   const voice=new Audio(new URL('hush-human68.ogg',document.currentScript?.src||location.href).href);
-  voice.loop=true;voice.preload='auto';voice.volume=.11;voice.preservesPitch=false;
+  voice.loop=true;voice.preload='auto';voice.volume=.20;voice.preservesPitch=false;
 
   const styles=document.createElement('style');
   styles.textContent=`
@@ -33,6 +33,9 @@
       line-height:1.35;font-weight:normal;letter-spacing:.015em;color:#efe1d5;
       max-width:85%;text-shadow:0 0 23px rgba(150,14,15,.65);animation:finalAppear 2.1s ease-out both}
     #final-end-screen .ending-foot{font-size:10px;letter-spacing:.3em;color:#896c6a;margin-top:10px}
+    #final-end-screen{background:#000}
+    #final-end-screen:before{display:none}
+    #final-end-screen .ending-line{color:#efeae6;text-shadow:none;animation:finalAppear 1.15s ease both}
     #final-end-screen button{display:none!important}
     #final-credits-screen{position:relative;width:100%;height:100%;max-width:none;max-height:none;
       background:radial-gradient(ellipse at 50% 42%,#170c14 0%,#070508 65%,#020204 100%);
@@ -77,10 +80,7 @@
   const end=document.createElement('section');
   end.id='final-end-screen';end.className='panel hidden';end.setAttribute('role','dialog');
   end.setAttribute('aria-label','Fim do prólogo');
-  end.innerHTML='<div class="ending-eyes" aria-hidden="true"></div>'+
-    '<div class="ending-line">“Ainda não é hora de acordar.”</div>'+
-    '<div class="ending-foot">FIM DO PRÓLOGO · NO LIMIAR DO FINITO</div>'+
-    '<div class="ending-foot">VOCÊ NÃO PODE VOLTAR</div>';
+  end.innerHTML='<div class="ending-line">“Ainda não é hora de acordar.”</div>';
   overlay.append(end);
   const credits=document.createElement('section');
   credits.id='final-credits-screen';credits.className='panel hidden';
@@ -162,7 +162,7 @@
     if(!FINALE.active||!audioOn){voice.pause();return;}
     if(FINALE.songFirstAt<0)FINALE.songFirstAt=gameTime;
     const distance=Math.hypot(player.x-FINALE.manX,player.y-FINALE.manY);
-    voice.volume=clamp(.12+.72*(1-distance/3150),.07,.82);
+    voice.volume=clamp(.19+.62*(1-distance/4900),.16,.86);
     if(voice.paused)voice.play().catch(()=>{});
     FINALE.nextSong=gameTime+1.4;
   }
@@ -186,19 +186,23 @@
     FINALE.manX=player.x;FINALE.manY=player.y-175;
     player.vx=0;player.vy=0;player.moving=false;player.sprinting=false;player.dir='up';
     voice.pause();songCaption.classList.remove('visible');
-    manSpeech.classList.add('visible');
-    // A legenda sempre aparece; a fala usa voz pt-BR quando disponível no navegador.
-    if(audioOn&&'speechSynthesis' in window){
-      try{
-        window.speechSynthesis.cancel();
-        const u=new SpeechSynthesisUtterance('Você não deveria estar aqui.');
-        u.lang='pt-BR';u.pitch=.38;u.rate=.73;u.volume=.95;
-        const vs=window.speechSynthesis.getVoices();
-        u.voice=vs.find(v=>v.lang.toLowerCase().startsWith('pt')&&/male|masculin|homem/i.test(v.name))
-          ||vs.find(v=>v.lang.toLowerCase().startsWith('pt'))||null;
-        window.speechSynthesis.speak(u);
-      }catch(_){}
+    // Usa o MESMO sistema de diálogo, retrato e avanço por clique/ENTER dos tokens.
+    const portrait=document.createElement('canvas');
+    portrait.width=128;portrait.height=128;
+    const ctx=portrait.getContext('2d');
+    ctx.imageSmoothingEnabled=false;
+    ctx.fillStyle='#0b070a';ctx.fillRect(0,0,128,128);
+    if(sprite.complete&&sprite.naturalWidth){
+      ctx.drawImage(sprite,20,2,71,86,6,0,116,128);
+      window.EMBEDDED_ASSETS=window.EMBEDDED_ASSETS||{};
+      window.EMBEDDED_ASSETS.portrait_lantern_man=portrait.toDataURL('image/png');
+    }else{
+      window.EMBEDDED_ASSETS=window.EMBEDDED_ASSETS||{};
+      window.EMBEDDED_ASSETS.portrait_lantern_man=sprite.src;
     }
+    showDialogue('???',['Você não deveria estar aqui.'],'lantern_man',()=>{
+      if(FINALE.active)beginFear();
+    });
   }
   function beginFear(){
     if(FINALE.phase!=='confront' && FINALE.phase!=='walk')return;
@@ -213,18 +217,20 @@
     if(audioOn)playSound('fail');
   }
   function beginCapture(){
-    if(FINALE.phase==='caught')return;
+    if(FINALE.phase==='caught'||state==='final-end'||state==='final-credits')return;
     FINALE.phase='caught';FINALE.phaseAt=gameTime;FINALE.catchAt=gameTime;
     hint.classList.remove('visible');songCaption.classList.remove('visible');manSpeech.classList.remove('visible');
     mobileRun.classList.remove('visible');heldKeys.clear();FINALE.touchRun=false;
     player.moving=false;player.sprinting=false;player.vy=0;
     voice.pause();voice.currentTime=0;
     if(audioOn){playSound('death');}
+    // Captura: corta IMEDIATAMENTE para a tela preta, sem aproximação do rosto.
+    FINALE.endingAt=gameTime;FINALE.creditsReached=false;setState('final-end');
   }
   function updateFinal(dt){
     FINALE.elapsed+=dt;muteLabyrinth();
     if(state==='final-end'){
-      if(!FINALE.creditsReached&&gameTime-FINALE.endingAt>=5.4){
+      if(!FINALE.creditsReached&&gameTime-FINALE.endingAt>=3.8){
         FINALE.creditsReached=true;setState('final-credits');
       }
       return;
@@ -232,12 +238,11 @@
     if(state==='final-credits')return;
     if(state!=='play')return;
     if(FINALE.phase==='caught'){
-      if(gameTime-FINALE.catchAt>1.75){FINALE.endingAt=gameTime;setState('final-end');muteLabyrinth();}
+      FINALE.endingAt=gameTime;setState('final-end');muteLabyrinth();
       return;
     }
     if(FINALE.phase==='confront'){
       player.moving=false;player.sprinting=false;player.vx=0;player.vy=0;
-      if(gameTime-FINALE.phaseAt>4.1)beginFear();
       return;
     }
     let dx=(heldKeys.has('d')||heldKeys.has('arrowright')?1:0)-(heldKeys.has('a')||heldKeys.has('arrowleft')?1:0);
@@ -265,11 +270,11 @@
     }
     if(FINALE.phase==='walk'){
       FINALE.torch=clamp((4350-player.y)/1950,0,1);
-      if(player.y<4030){
+      if(player.y<5600){
         songCaption.classList.add('visible');
         if(gameTime>=FINALE.nextSong)singLullaby();
       }else songCaption.classList.remove('visible');
-      if(player.y<1525&&(FINALE.songFirstAt<0||gameTime-FINALE.songFirstAt>=14||player.y<1345))beginConfront();
+      if(player.y<1525&&(FINALE.songFirstAt<0||gameTime-FINALE.songFirstAt>=26||player.y<1345))beginConfront();
     }else{
       FINALE.torch=1;
       if(gameTime>=FINALE.nextSong)singLullaby();
@@ -301,15 +306,7 @@
   function renderFinal(){
     g.save();g.clearRect(0,0,W,H);g.fillStyle='#030407';g.fillRect(0,0,W,H);
     if(FINALE.phase==='caught'){
-      g.fillStyle='#070304';g.fillRect(0,0,W,H);
-      const t=gameTime-FINALE.catchAt;
-      const size=400+t*500;
-      if(sprite.complete&&sprite.naturalWidth){
-        g.save();g.imageSmoothingEnabled=false;g.globalAlpha=.83;
-        g.drawImage(sprite,27,7,63,73,W/2-size*.5,H/2-size*.36,size,size*1.23);
-        g.restore();
-      }
-      g.fillStyle='rgba(154,8,11,'+(.16+.11*Math.sin(gameTime*36))+')';g.fillRect(0,0,W,H);
+      g.fillStyle='#000';g.fillRect(0,0,W,H);
       g.restore();return;
     }
     const cameraTop=FINALE.cameraY;
@@ -386,7 +383,14 @@
   endGame=function(){if(state==='play'&&!FINALE.active)enterFinalCorridor();};
   render=function(){if(FINALE.active)return renderFinal();return oldRender();};
   update=function(dt){
-    if(FINALE.active){gameTime+=dt;updateFinal(dt);return;}
+    if(FINALE.active){
+      gameTime+=dt;
+      if(state==='dialog'){
+        // Permite animação letra a letra no mesmo painel dos demais personagens.
+        tickDialogueTypewriter(dt);muteLabyrinth();return;
+      }
+      updateFinal(dt);return;
+    }
     return oldUpdate(dt);
   };
   retry=function(full=false){
@@ -403,4 +407,5 @@
   window.__finaleTest66={enter:enterFinalCorridor,state:()=>({...FINALE,playerY:player.y,playerX:player.x,gameState:state})};
   window.__finaleTest67={enter:enterFinalCorridor,state:()=>({...FINALE,playerY:player.y,gameState:state,voicePlaying:!voice.paused}),voice};
   window.__finaleTest68={enter:enterFinalCorridor,state:()=>({...FINALE,playerY:player.y,gameState:state,voicePlaying:!voice.paused}),voice};
+  window.__finaleTest69={enter:enterFinalCorridor,state:()=>({...FINALE,playerY:player.y,gameState:state,voicePlaying:!voice.paused}),voice};
 })();
