@@ -10,6 +10,7 @@ on:
       - 'scripts/patch_teste63.py'
       - 'scripts/patch_teste64.py'
       - 'scripts/patch_teste65.py'
+      - 'scripts/finale-teste66.js'
       - '.github/workflows/publicar-jogo.yml'
   workflow_dispatch:
 
@@ -110,6 +111,27 @@ jobs:
           grep -q "function scene1DisplayName" site/index.html
           grep -q "function scene2DisplayName(id)" site/index.html
           grep -q "function scene3DisplayName(id)" site/index.html
+
+      - name: Acrescentar corredor e perseguicao final - Teste 66
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp scripts/finale-teste66.js site/finale-teste66.js
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('site/index.html')
+          html=p.read_text(encoding='utf-8')
+          if html.count('Versão 65 ·') != 1 or html.count('</body>') != 1:
+              raise SystemExit('Marcadores da versão anterior ausentes. Publicação interrompida.')
+          html=html.replace('Versão 65 ·','Versão 66 ·',1)
+          html=html.replace('PRÓLOGO · TESTE 62 ·','PRÓLOGO · TESTE 66 ·')
+          html=html.replace('<title>No Limiar do Finito — Teste 62', '<title>No Limiar do Finito — Teste 66',1)
+          html=html.replace('</body>','<script src="finale-teste66.js"></script>\n</body>',1)
+          p.write_text(html,encoding='utf-8')
+          assert 'finale-teste66.js' in html
+          assert Path('site/finale-teste66.js').stat().st_size>20000
+          print('Teste 66 - corredor, cantiga, perseguicao e captura prontos.')
+          PY
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
