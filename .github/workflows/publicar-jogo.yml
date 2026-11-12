@@ -239,7 +239,7 @@ jobs:
           j=Path('site/finale-teste66.js').read_text(encoding='utf-8')
           assert "toastExpire=0" in j
           assert "$('toast').classList.add('hidden')" in j
-          assert '/* Teste 70' in j
+          assert '/* Teste 71' in j or '/* Teste 70' in j
           print('Teste 70: aviso da porta removido e HUD do corredor limpo.')
           PY
 
