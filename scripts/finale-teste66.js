@@ -1,4 +1,4 @@
-/* Teste 70 — o corredor além da Grande Porta.
+/* Teste 71 — o corredor além da Grande Porta.
    Cena autocontida: não altera memórias, senhas ou objetos do Limiante. */
 (() => {
   'use strict';
@@ -6,14 +6,14 @@
     active:false,phase:'walk',manX:480,manY:1120,elapsed:0,phaseAt:0,
     nextSong:0,catchAt:0,closeAt:0,cameraY:0,touchRun:false,
     torch:0,lampSeen:false,steps:0,lastStep:-1,shiver:0,
-    songFirstAt:-1,nextBeat:0,endingAt:0,creditsReached:false,said:false
+    songFirstAt:-1,nextBeat:0,nextChaseBeat:0,chaseBeat:0,endingAt:0,creditsReached:false,said:false
   };
   const sprite=new Image();
   sprite.src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAADVCAMAAACWqqW2AAAASFBMVEUJAgQfDw5UKyRyRTeUTjSWYEwUCQrpl1QVCQpuT0eGOSfObjf73p7PdUVJIh/5xne1hWlRIB5NIh/ggjxsWVK1mYHRMCPstoo9+CvuAAAAGHRSTlMA/v7///+x/1T+/////x3//1+p/yL///8UkEqbAAANBElEQVR42u1c2XbjOA41wEWUHae2mZ7//9PhBhCgqJi03f3QJzpVKcdxeIV9VV0u39e/8QKAsPoLn4sQaBABljDWPp9+IV8AfoEOWL8pqDALIAgrrMIMg4llOEtMBNmnQULCwPLX4Aqn/TS/AtNhKr+mablMk1KJIAyzwmrYDUxjQIZh0U9zYVYq5fTCskiHcy7JZdIs02/6OQPJhGSgCAFFODApT3AwbSGZGGdNsTCY1uPEL5jlVrqsdcAXLkjl0f2AIYwoDhDXLMMAjMEwYYcZwoC+cE72sO+PZA8EYiwcLj+lm+kI/9jYE4ardw/YSPGPqcAdH3owOrOejHu2RnrzoTxdlaI5VzAPbCMsfIf7Tjb/kF1YHINXtvKfo1qU266n/hU/jW5nzxImzL1qMXuwoFgHQAhkigkrIpid+DVjx5UlfLQHFzr7wOqygL8kx0Ig4TG7soV4YfZesK7cvcEaRvh85/b0IzMZvz1WobSjK1Ge9akSko80BeSn8GUTKNnFAQhSCut8PpCsglUrasEeOYXsVObEEh2XR4mSX+VsoeiVPC6+l2IJ+7E5qSRzhJIb7XRLBSQhGDSo7DB/KwiZDY+JOQXkvzU6+MKhchk0zYXsxjSX30TvZ3xXScB2ynEYpN5t87zRmhCscPOzIDWP3BvhwDInptB38T7ET/jVBEjY+UYzSigpouQKNskg7hIEp509/dqedDeAaZwCddeofDwY8jZTUYsDarQxD5z80MWmIhEqyHTy5dv9GmkSFaKkvtiRUeLDLLMkvzRDktkx5wAl90SAnK26PP/6Xp0g2yC9Kg5fweBidSP5gFIYQtFqgqoQFgqu7It7q2DuJHfVzj3wLCyTIu4fUdDQiEHUslku1AC152vndT+on15FYbPWYHBEaf+sWIkonbs4riSjZfEMwwISuwUGogpXnSjkNVlxyvNKDd3SeME6hNE1UaQE4bv5OCP8lmlGeALzmGO/RxhW2GOKWThk2oJYgtcgKYHIOYSp9FgVHQGfAblo5qd0JHpGY00O7ybmWcZYC19cM5Sozxu0llITZ10mwSgNGHDsMYpS+oghCzYrSZCCwa5wDA81GIRWnfMET7XrMSmyMtvNmQ6RoZ7cxYMiuBmbKSk1ilJNnOLIt+EqKdKgOX8wBgdeCmvyOES5fAGiRFiPMHTDlETwmcYY1I6mVdnhFOPXwedh0l9yKdaw0VPZYE+U2H9phT7WDS31SHYXk/Z0leNc5R2LzeicbL5f0Eyk3KnMG2vtIIqgg3NeAOGWn/ZNVAcZDrwG4RjGpkAK991IM3NZahAlSs5SlDnNgGRht+YMdiyLRtpEkD1/QvEi2Z/IhI3L2kRcULKucjDs7ndDqeylJefhMR25BrUoYqIC2QtDyUyMYBJQK+dRmmKSSZSKts984FCMEAqVvYHS5Afd3iwO1+zxNJALXUCRpNab+xIkhj5DwbUwzgxRZFrXYoLPfYWvQEp1aKQ/T42ZMYo0IvkJX1Dgy7zRSH+e3UlJIE5Aijykpy5FOX4RSpRBmKpfKY8YRvJi+sq9JFLyD78eVTQXUko4kz2kM9hlQUjjE8h9sCajkP7go561KEpTslIbNF0LuE42qrZK1xVOPcshKCRjzAaTmlkHFKyqS8OsY+g6HbnIUhdLiM0hpVqL1DvIHQ/DyTV3DE99ZIA+WaDc2qbeYnrh9n3Hrh+hpmWgoubB3YdROlDv37icXhfhVxgZDUHf6HmPULhAXbZFjpRGebLJnwmlDGNGGCW9bQw5yVGwz4eSFHJamg3/5+bctlMrEIcZnAjMB0KEOnb9jqpQmOjY9tw4lep7FG/Vu8PMEUkjj+Ush+B4fBQ9OGOcUOGRR6eGbpdyoy4PFYhlkD0NCxwaJ+9lCDKUymdRL5AEkQPnMB8t0iQQ5x5kvMDSHfl4dYf5Y3YEsmuDHHaYTrrD8vSWoqKz0o8YsNA1PMcgVcdOQFQDM1aJrnPtOlkexz9A+uRpV0job3IqZ4G9csucgWRS/LhBoIwxGqLp2jPSv8VCO7LvpFIrKKG3x5wEUC+l+FwqpDWPWBVy/neeSkMXghMhIYMw6+MXx9V6avofGGZPZHJpmZRC8cVje2iE5NzA9B0zhZLiS2b75+dZ10/dQ+WeBiGRnIGk5IF7CwcQf7I0EWTKmDTYNrW2WQraXF0WCYxBQhgnX8BzEsi6ZVGGFouba+EzvWlzngL9LVclzCHkpHte/X5iVo0lKEsIOW6yDqgq94ftlwLixxg1ZUh0VJDSU+EEzrI2RHZeRu2Hyi+Po6jGDgVLZ6iB2Eyf48hWXqRUpdLqjxmcvwy2GWTYLRsJCQQRdTcb28jUtpcqYSSQcEJjTT2L920g5fTN6J5q5hYesxOOzKGLBf4wiAEsIDU/MnXigIANZDzAbJGxA0HsMUqmUiSScjy3/W9LnTvuSqNVfd0RyKV7X4EAgZS3r6rzH4PZtUVy5uehv1hVtt/UQhQDRQHShRW0vIgh8sLxMpp430O71SZbEgneZa8ufssg4ndgvIzmsZsvtRy3OnMgmZD/L+dZVCAwBDk6R9npazWdLX9zbyKq2u2WTNSm3rNgLQzMMYRhcim6iVGqgIqSBHK92fvtdotvZijRx8NR2T6mRLi+K/kn1yb8EeS2bfd7pOoGdwHCwfoA0vvGT1QNa0Ark9ZISOTSfUsXYqTGSUrIkx1YMwap51pOr65V3gnkXlAQbje8YesH8p8DJWeLZ8VarlicPBAv7vHL3dpKyYZbG3Tw0GMNBBNIMb9rBYlH2+1mt48tHr/d8Ydt3EqziFG6COcFNrsPQQnYCLL9iXJvIIDKdHFudUxOEmtk5WhvPyJIxEggd4ws+3Gv42Asg5uJKQOZPHuJa2nFU7THewJJGB9JKNutgpRbqB3puRG8JgRqkZC/bSAfRxDEFRDgRVBLIPWK+mQ/MkYGiezaaLIFaBf2eHMGXsr9qxXVSKYknvyDQaLlf5AOJ4/W9SW+BuGK3soZUibkVkEuCSSbiy2UgL0ugPxG0ZuwGuSeNPhj+1EpiSCmA4nFfpgmRIKgBkkqzCB3NvnrdUkkDcQYUEOZKHe83yL37WbToVv1K0l3MyV2cm79mz4HmpD04n4jyCvpG1Fi62xicmWBSPHp7oRVRrbfEinx/v/8iX9tJuS+VT20BWR6AP9JaFcxwoogzpqtoGQvnB1ZVdwokusKyAX11rQw/S2mq7ecg9vMr3vLwohd0yCflBxdr+xbOdCLJbJMKYHYMsuZxPiFem26BX1bk0YXI2MuWsQ0qpA2DfLZ9d46kGx819tVm1EVjV16OqKEzSuqjiUz54q2D1Wm2tU6SDcXzRVXVFZ7i4ZuXSlekD0wLLBLVCkiH0bdme8WjGidYZVdcNy5OW4msaqR3S+CIChKQPcbNQiUFaYUfxZBsEm6B7nqjQIeOBuEZZEMpmU4WFugOfA6u6DZYUkO+r6k6G3TGHg2i+h63a3o4haGbBhTEmg4pV8C+a0wasDrQLpME1ZBgrRnHnsOOqjAZV19vSQR7JJVLyc8Yg1G7pMtUqJW6ijP8fgQZIUSRH1WSaK9pARVq4V7O36REC+8PckdW/HNbTzZoFgg5Bd3WLneBNEP0SkMLTisgrTcvB3G+3fcjJDKxQFnDcTL9URPmwKis8YLJbkptw7yi7veICqOLuSL6h2B7fTyxKVA9PmmesYyKQ0wsQ9xzjgYgzSHYLDx8kkQ1v6gzxcgAG1R6ykQCNQ39qDyyeyt+AnJ87nWZA5WKZGcohU8LOMI6ro/RwjPBrrMWINkQp6WiHjigZ7Hou1wXk2thAAueq5jvG8OhvymKQtEefOqgcArtNCSS/PNBtv20ttAQD5IRjpmgEHwRcHLhYQGYqTnfWJd/4yS4w4/z2DgZCS/TgnIPdW8NMwbMMTL94HwNiQleJ7s/Z0gWXvFnDZwLvGqSOT2R+aUOa7zvgYSQCwhlUxO7bjSoORldrVhphlsnwK8DQTkU7Eo1/NXnzg5BaG9zb5WqSDhRUJCS/La1hVPzS7H4dvzCUVOvAFNr1R+PL94QoNLk9v7QUXn28OiLzqumt33hFR5v8quwHlizuLMceXjcpxVPhNJRBpv+kqeZ3r+5UBCJQseegas4m8BATysxLBOjab6K8k3DQIv0D/yInziayBkh7GgA922AdQgrziVw3ISgBwxX94D0mPUVg1KQrJ2vegasX8SpBXWXqaZr3mtqqu+1ez96vQrIHAEaXFDoqz+5zdqf4VK7FoAa8OWZaJ/XnlRUXKIfoAvOl/d72KQQenyQh4vurMSJGgH/ezxuWGjG2dAzy+8HgBlQ03sbvHyCbwN5LNJIdQ0IeRs950gZUkN69NP/Ow90BNCl/dd5b8Lat0IEsnlvZcPZdb8t4JQ24N6UqCXgd55taj0vOeYkc3l77/+CYzv6/v6vr6v7+sfuv4PX35RDJPV40AAAAAASUVORK5CYII=';
 
   // Hush Little Baby.mp3: performance humana de TheGloomWorker, CC0 no Freesound.
   const voice=new Audio(new URL('hush-human68.ogg',document.currentScript?.src||location.href).href);
-  voice.loop=true;voice.preload='auto';voice.volume=.20;voice.preservesPitch=false;
+  voice.loop=true;voice.preload='auto';voice.volume=.53;voice.preservesPitch=false;
 
   const styles=document.createElement('style');
   styles.textContent=`
@@ -129,7 +129,8 @@
     FINALE.manX=480;FINALE.manY=1120;FINALE.nextSong=gameTime;FINALE.said=false;
     FINALE.catchAt=0;FINALE.closeAt=0;FINALE.lampSeen=false;
     FINALE.cameraY=6170;FINALE.steps=0;FINALE.lastStep=-1;FINALE.touchRun=false;
-    FINALE.songFirstAt=-1;FINALE.nextBeat=0;FINALE.creditsReached=false;FINALE.endingAt=0;
+    FINALE.songFirstAt=-1;FINALE.nextBeat=0;FINALE.nextChaseBeat=0;FINALE.chaseBeat=0;FINALE.creditsReached=false;FINALE.endingAt=0;
+    stopChaseSound();
     voice.pause();voice.currentTime=0;
     player={...player,x:480,y:6600,dir:'up',vx:0,vy:0,step:0,moving:false,sprinting:false,lean:0,moveBlend:0};
     camera.x=0;camera.y=FINALE.cameraY;
@@ -166,9 +167,86 @@
     if(!FINALE.active||!audioOn){voice.pause();return;}
     if(FINALE.songFirstAt<0)FINALE.songFirstAt=gameTime;
     const distance=Math.hypot(player.x-FINALE.manX,player.y-FINALE.manY);
-    voice.volume=clamp(.19+.62*(1-distance/4900),.16,.86);
+    voice.volume=clamp(.43+.55*(1-distance/4900),.42,.97);
     if(voice.paused)voice.play().catch(()=>{});
     FINALE.nextSong=gameTime+1.4;
+  }
+  // TESTE 71 — trilha original de perseguição em 168 BPM.
+  // Síntese ao vivo (não há música de terceiros): pulsação, cordas tensas, metal e ruído.
+  // Um compressor limita os picos, mesmo com uma mistura propositalmente forte.
+  let chaseBus=null, chaseCompressor=null, chaseNoise=null;
+  function ensureChaseBus(){
+    if(!audioOn)return false;
+    soundSetup();
+    if(!audioCtx)return false;
+    if(!chaseBus || chaseBus.context!==audioCtx){
+      chaseCompressor=audioCtx.createDynamicsCompressor();
+      chaseCompressor.threshold.value=-25;
+      chaseCompressor.knee.value=8;
+      chaseCompressor.ratio.value=11;
+      chaseCompressor.attack.value=.003;
+      chaseCompressor.release.value=.13;
+      chaseBus=audioCtx.createGain();
+      chaseBus.gain.value=0;
+      chaseBus.connect(chaseCompressor);
+      chaseCompressor.connect(audioCtx.destination);
+      chaseNoise=audioCtx.createBuffer(1,Math.round(audioCtx.sampleRate*.25),audioCtx.sampleRate);
+      const samples=chaseNoise.getChannelData(0);
+      for(let i=0;i<samples.length;i++)samples[i]=Math.random()*2-1;
+    }
+    return true;
+  }
+  function stopChaseSound(){
+    if(!chaseBus || !audioCtx)return;
+    const now=audioCtx.currentTime;
+    chaseBus.gain.cancelScheduledValues(now);
+    chaseBus.gain.setTargetAtTime(0,now,.05);
+  }
+  function chaseSting(freq,t,duration,amp,wave='sawtooth',cutoff=1650){
+    const osc=audioCtx.createOscillator(),filter=audioCtx.createBiquadFilter(),gain=audioCtx.createGain();
+    osc.type=wave;osc.frequency.setValueAtTime(freq,t);
+    osc.detune.value=wave==='sawtooth'? -5:0;
+    filter.type='lowpass';filter.frequency.setValueAtTime(cutoff,t);
+    gain.gain.setValueAtTime(.0001,t);
+    gain.gain.exponentialRampToValueAtTime(Math.max(.001,amp),t+.012);
+    gain.gain.exponentialRampToValueAtTime(.0001,t+duration);
+    osc.connect(filter);filter.connect(gain);gain.connect(chaseBus);
+    osc.start(t);osc.stop(t+duration+.025);
+  }
+  function chasePercussion(t,strong){
+    const kick=audioCtx.createOscillator(),env=audioCtx.createGain();
+    kick.type='sine';
+    kick.frequency.setValueAtTime(strong?118:85,t);
+    kick.frequency.exponentialRampToValueAtTime(40,t+.15);
+    env.gain.setValueAtTime(.001,t);
+    env.gain.exponentialRampToValueAtTime(strong?.64:.33,t+.011);
+    env.gain.exponentialRampToValueAtTime(.001,t+.19);
+    kick.connect(env);env.connect(chaseBus);
+    kick.start(t);kick.stop(t+.21);
+    if(chaseNoise && strong){
+      const noise=audioCtx.createBufferSource(),hp=audioCtx.createBiquadFilter(),g=audioCtx.createGain();
+      noise.buffer=chaseNoise;hp.type='highpass';hp.frequency.value=800;
+      g.gain.setValueAtTime(.20,t);
+      g.gain.exponentialRampToValueAtTime(.0001,t+.095);
+      noise.connect(hp);hp.connect(g);g.connect(chaseBus);
+      noise.start(t);noise.stop(t+.12);
+    }
+  }
+  function chaseMusicBeat(){
+    if(!FINALE.active || (FINALE.phase!=='fear'&&FINALE.phase!=='chase')){
+      stopChaseSound();return;
+    }
+    if(!ensureChaseBus()){stopChaseSound();return;}
+    const t=audioCtx.currentTime+.022,beat=FINALE.chaseBeat++;
+    chaseBus.gain.setTargetAtTime(FINALE.phase==='chase'?.90:.70,t,.05);
+    chasePercussion(t,beat%2===0);
+    const pattern=[110,116.54,98,123.47,110,103.83,92.5,138.59];
+    chaseSting(pattern[beat%8],t,.17,beat%2===0?.20:.16);
+    if(beat%4===0){
+      chaseSting(55,t,.64,.29,'triangle',580);
+      chaseSting(155.56,t,.60,.18,'sawtooth',650);
+    }
+    if(beat%8===7)chaseSting(247,t,.36,.14,'square',1800);
   }
   function heartbeat(){
     if(!audioOn)return;
@@ -216,8 +294,8 @@
     hint.classList.add('visible');songCaption.classList.remove('visible');
     mobileRun.classList.add('visible');
     FINALE.shiver=2.5;
-    FINALE.nextBeat=gameTime;
-    voice.playbackRate=.90;
+    FINALE.nextBeat=gameTime;FINALE.nextChaseBeat=gameTime;FINALE.chaseBeat=0;
+    voice.pause();voice.playbackRate=.90;
     if(audioOn)playSound('fail');
   }
   function beginCapture(){
@@ -226,7 +304,7 @@
     hint.classList.remove('visible');songCaption.classList.remove('visible');manSpeech.classList.remove('visible');
     mobileRun.classList.remove('visible');heldKeys.clear();FINALE.touchRun=false;
     player.moving=false;player.sprinting=false;player.vy=0;
-    voice.pause();voice.currentTime=0;
+    voice.pause();voice.currentTime=0;stopChaseSound();
     if(audioOn){playSound('death');}
     // Captura: corta IMEDIATAMENTE para a tela preta, sem aproximação do rosto.
     FINALE.endingAt=gameTime;FINALE.creditsReached=false;setState('final-end');
@@ -284,7 +362,9 @@
       if(player.y<1525&&(FINALE.songFirstAt<0||gameTime-FINALE.songFirstAt>=26||player.y<1345))beginConfront();
     }else{
       FINALE.torch=1;
-      if(gameTime>=FINALE.nextSong)singLullaby();
+      // A cantiga para quando o encontro termina e a trilha de fuga entra.
+      voice.pause();
+      if(gameTime>=FINALE.nextChaseBeat){chaseMusicBeat();FINALE.nextChaseBeat=gameTime+60/168/2;}
       if(gameTime>=FINALE.nextBeat){heartbeat();FINALE.nextBeat=gameTime+(FINALE.phase==='fear'?.87:.57);}
       if(FINALE.phase==='fear'&&gameTime-FINALE.phaseAt>2.05){FINALE.phase='chase';FINALE.phaseAt=gameTime;}
       if(FINALE.phase==='chase'){
@@ -295,7 +375,7 @@
       }
     }
     if(!audioOn&& !voice.paused)voice.pause();
-    if(FINALE.phase==='chase'){voice.volume=.78;voice.playbackRate=.83;}
+    if(!audioOn)stopChaseSound();
     const viewTarget=player.y-435;
     FINALE.cameraY+=(viewTarget-FINALE.cameraY)*(1-Math.exp(-dt*5.3));
     camera.x=0;camera.y=FINALE.cameraY;
@@ -402,7 +482,7 @@
   };
   retry=function(full=false){
     if(FINALE.active&&(FINALE.phase==='caught'||state==='final-end'||state==='final-credits'))return;
-    voice.pause();voice.currentTime=0;voice.playbackRate=1;
+    voice.pause();voice.currentTime=0;voice.playbackRate=1;stopChaseSound();
     FINALE.active=false;FINALE.touchRun=false;FINALE.phase='walk';
     hint.classList.remove('visible');songCaption.classList.remove('visible');mobileRun.classList.remove('visible');
     return oldRetry(full);
@@ -424,4 +504,5 @@
   window.__finaleTest67={enter:enterFinalCorridor,state:()=>({...FINALE,playerY:player.y,gameState:state,voicePlaying:!voice.paused}),voice};
   window.__finaleTest68={enter:enterFinalCorridor,state:()=>({...FINALE,playerY:player.y,gameState:state,voicePlaying:!voice.paused}),voice};
   window.__finaleTest69={enter:enterFinalCorridor,state:()=>({...FINALE,playerY:player.y,gameState:state,voicePlaying:!voice.paused}),voice};
+  window.__finaleTest71={enter:enterFinalCorridor,state:()=>({...FINALE,playerY:player.y,gameState:state,voicePlaying:!voice.paused}),voice};
 })();
