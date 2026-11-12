@@ -1,14 +1,19 @@
-/* Teste 66 — o corredor além da Grande Porta.
+/* Teste 67 — o corredor além da Grande Porta.
    Cena autocontida: não altera memórias, senhas ou objetos do Limiante. */
 (() => {
   'use strict';
   const FINALE={
     active:false,phase:'walk',manX:480,manY:1120,elapsed:0,phaseAt:0,
     nextSong:0,catchAt:0,closeAt:0,cameraY:0,touchRun:false,
-    torch:0,lampSeen:false,steps:0,lastStep:-1,shiver:0
+    torch:0,lampSeen:false,steps:0,lastStep:-1,shiver:0,
+    songFirstAt:-1,nextBeat:0,endingAt:0,creditsReached:false
   };
   const sprite=new Image();
   sprite.src='data:image/png;base64,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';
+
+  // Cantiga original portuguesa, voz sintetizada grave, sem obra de terceiros.
+  const voice=new Audio(new URL('cantiga-67.ogg',document.currentScript?.src||location.href).href);
+  voice.loop=true;voice.preload='auto';voice.volume=.12;
 
   const styles=document.createElement('style');
   styles.textContent=`
@@ -28,7 +33,24 @@
       line-height:1.35;font-weight:normal;letter-spacing:.015em;color:#efe1d5;
       max-width:85%;text-shadow:0 0 23px rgba(150,14,15,.65);animation:finalAppear 2.1s ease-out both}
     #final-end-screen .ending-foot{font-size:10px;letter-spacing:.3em;color:#896c6a;margin-top:10px}
-    #final-end-screen button{margin-top:18px}
+    #final-end-screen button{display:none!important}
+    #final-credits-screen{position:relative;width:100%;height:100%;max-width:none;max-height:none;
+      background:radial-gradient(ellipse at 50% 42%,#170c14 0%,#070508 65%,#020204 100%);
+      border:0;box-shadow:none;overflow:hidden;color:#e8d8c9;display:block;padding:0}
+    #final-credits-screen.hidden{display:none!important}
+    #final-credits-screen .credit-scroll{position:absolute;top:0;left:0;right:0;
+      display:flex;flex-direction:column;align-items:center;text-align:center;gap:23px;
+      padding:4rem 2rem 5rem;transform:translateY(15%)}
+    #final-credits-screen:not(.hidden) .credit-scroll{animation:finalCredits 36s linear forwards}
+    #final-credits-screen .credit-title{font-family:Georgia,serif;font-size:clamp(23px,5vw,46px);
+      letter-spacing:.11em;color:#f3e8df;line-height:1.35}
+    #final-credits-screen .credit-section{font-size:11px;letter-spacing:.23em;color:#a58c80;margin-top:14px}
+    #final-credits-screen .credit-name{font-family:Georgia,serif;font-size:clamp(17px,3vw,26px);color:#e9d5bf}
+    #final-credits-screen .credit-last{font-family:Georgia,serif;font-size:18px;
+      color:#e6c4b7;font-style:italic;margin-top:25px}
+    #final-credits-screen .credits-darkness{position:absolute;inset:0;pointer-events:none;
+      background:linear-gradient(#050406 0%,transparent 20%,transparent 78%,#050406 100%)}
+    @keyframes finalCredits{from{transform:translateY(15%)}to{transform:translateY(-110%)}}
     @keyframes finalEyes{0%,73%,78%,98%{opacity:.75}75%,97%{opacity:0}}
     @keyframes finalAppear{from{opacity:0;filter:blur(8px)}to{opacity:1;filter:blur(0)}}
     #final-corridor-hint{position:absolute;z-index:21;left:50%;top:auto;bottom:11%;transform:translateX(-50%);
@@ -53,16 +75,33 @@
   const end=document.createElement('section');
   end.id='final-end-screen';end.className='panel hidden';end.setAttribute('role','dialog');
   end.setAttribute('aria-label','Fim do prólogo');
-  end.innerHTML=`<div class="ending-eyes" aria-hidden="true"></div>
-    <div class="ending-line">“ainda não hora de acordar”</div>
-    <div class="ending-foot">FIM DO PRÓLOGO · NO LIMIAR DO FINITO</div>
-    <button class="primary" id="final-play-again">JOGAR NOVAMENTE ↻</button>`;
+  end.innerHTML='<div class="ending-eyes" aria-hidden="true"></div>'+
+    '<div class="ending-line">“ainda não hora de acordar”</div>'+
+    '<div class="ending-foot">FIM DO PRÓLOGO · NO LIMIAR DO FINITO</div>'+
+    '<div class="ending-foot">VOCÊ NÃO PODE VOLTAR</div>';
   overlay.append(end);
-  document.getElementById('final-play-again').onclick=()=>retry(true);
+  const credits=document.createElement('section');
+  credits.id='final-credits-screen';credits.className='panel hidden';
+  credits.setAttribute('role','dialog');credits.setAttribute('aria-label','Agradecimentos finais');
+  credits.innerHTML='<div class="credit-scroll">'+
+    '<div class="credit-section">UM PRÓLOGO SOBRE O QUE NÃO DEVERIA DESPERTAR</div>'+
+    '<div class="credit-title">NO LIMIAR DO FINITO</div>'+
+    '<div class="credit-name">LIMIANTE</div>'+
+    '<div class="credit-section">CRIAÇÃO E UNIVERSO</div>'+
+    '<div class="credit-name">Gabriel Sartori</div>'+
+    '<div class="credit-section">MÚSICA DO CORREDOR</div>'+
+    '<div class="credit-name">Cantiga original do Homem da Lamparina</div>'+
+    '<div class="credit-section">AGRADECIMENTOS</div>'+
+    '<div class="credit-name">A todos que caminharam pelo Limiante.</div>'+
+    '<div class="credit-name">A todos que ouviram seus ecos.</div>'+
+    '<div class="credit-last">Obrigado por jogar.</div>'+
+    '<div class="credit-section">FIM DO PRÓLOGO</div>'+
+    '</div><div class="credits-darkness"></div>';
+  overlay.append(credits);
   const hint=document.createElement('div');hint.id='final-corridor-hint';
   hint.innerHTML='CORRA!<small>SHIFT + S / SETA PARA BAIXO</small>';
   document.getElementById('viewport').append(hint);
-  const songCaption=document.createElement('div');songCaption.id='final-song';songCaption.textContent='♪ hm... hm... ah... ♪';
+  const songCaption=document.createElement('div');songCaption.id='final-song';songCaption.textContent='♪ Dorme... dorme, pequeno... ♪';
   document.getElementById('viewport').append(songCaption);
   const mobileRun=document.createElement('button');mobileRun.id='final-run-mobile';mobileRun.textContent='CORRER';
   mobileRun.setAttribute('aria-label','Segure para correr no corredor');
@@ -84,6 +123,8 @@
     FINALE.manX=480;FINALE.manY=1120;FINALE.nextSong=gameTime;
     FINALE.catchAt=0;FINALE.closeAt=0;FINALE.lampSeen=false;
     FINALE.cameraY=1825;FINALE.steps=0;FINALE.lastStep=-1;FINALE.touchRun=false;
+    FINALE.songFirstAt=-1;FINALE.nextBeat=0;FINALE.creditsReached=false;FINALE.endingAt=0;
+    voice.pause();voice.currentTime=0;
     player={...player,x:480,y:2260,dir:'up',vx:0,vy:0,step:0,moving:false,sprinting:false,lean:0,moveBlend:0};
     camera.x=0;camera.y=FINALE.cameraY;
     heldKeys.clear();muteLabyrinth();
@@ -93,7 +134,7 @@
     hint.classList.remove('visible');songCaption.classList.remove('visible');
     mobileRun.classList.remove('visible');
     setState('play');
-    if(audioOn)playSound('gate-open');
+    // Apenas os passos: o portão já ficou para trás.
   }
   function finalNote(frequency,at,duration,volume){
     const a=audioCtx;
@@ -112,17 +153,26 @@
     vib.start(at);vib.stop(at+duration+.38);
   }
   function singLullaby(){
-    if(!audioOn||!FINALE.active||FINALE.phase==='walk'&&player.y>1830)return;
-    soundSetup();if(!audioCtx)return;
-    if(audioCtx.state==='suspended')audioCtx.resume().catch(()=>{});
-    const t=audioCtx.currentTime+.06;
+    if(!FINALE.active||!audioOn){voice.pause();return;}
+    if(FINALE.songFirstAt<0)FINALE.songFirstAt=gameTime;
     const distance=Math.hypot(player.x-FINALE.manX,player.y-FINALE.manY);
-    const v=.009+.025*clamp(1-distance/700,0,1);
-    // Melodia original, sem palavras, com textura baixa semelhante a uma voz cantarolando.
-    const phrase=[{n:146.83,t:0,d:.9},{n:164.81,t:.96,d:.68},{n:130.81,t:1.72,d:.76},
-                  {n:116.54,t:2.65,d:1.10},{n:130.81,t:3.83,d:.58}];
-    for(const note of phrase)finalNote(note.n,t+note.t,note.d,v);
-    FINALE.nextSong=gameTime+5.35;
+    voice.volume=clamp(.16+.72*(1-distance/950),.10,.88);
+    if(voice.paused)voice.play().catch(()=>{});
+    FINALE.nextSong=gameTime+1.4;
+  }
+  function heartbeat(){
+    if(!audioOn)return;
+    soundSetup();if(!audioCtx)return;
+    const t=audioCtx.currentTime;
+    for(const [offset,volume] of [[0,.085],[.22,.052]]){
+      const o=audioCtx.createOscillator(),en=audioCtx.createGain();
+      o.type='sine';o.frequency.setValueAtTime(76,t+offset);
+      o.frequency.exponentialRampToValueAtTime(41,t+offset+.18);
+      en.gain.setValueAtTime(.0001,t+offset);
+      en.gain.exponentialRampToValueAtTime(volume,t+offset+.014);
+      en.gain.exponentialRampToValueAtTime(.0001,t+offset+.22);
+      o.connect(en);en.connect(audioCtx.destination);o.start(t+offset);o.stop(t+offset+.24);
+    }
   }
   function beginFear(){
     if(FINALE.phase!=='walk')return;
@@ -131,6 +181,8 @@
     hint.classList.add('visible');songCaption.classList.remove('visible');
     mobileRun.classList.add('visible');
     FINALE.shiver=2.5;
+    FINALE.nextBeat=gameTime;
+    voice.playbackRate=.91;
     if(audioOn)playSound('fail');
   }
   function beginCapture(){
@@ -139,14 +191,21 @@
     hint.classList.remove('visible');songCaption.classList.remove('visible');
     mobileRun.classList.remove('visible');heldKeys.clear();FINALE.touchRun=false;
     player.moving=false;player.sprinting=false;player.vy=0;
+    voice.pause();voice.currentTime=0;
     if(audioOn){playSound('death');}
   }
   function updateFinal(dt){
     FINALE.elapsed+=dt;muteLabyrinth();
-    if(state==='final-end')return;
+    if(state==='final-end'){
+      if(!FINALE.creditsReached&&gameTime-FINALE.endingAt>=5.4){
+        FINALE.creditsReached=true;setState('final-credits');
+      }
+      return;
+    }
+    if(state==='final-credits')return;
     if(state!=='play')return;
     if(FINALE.phase==='caught'){
-      if(gameTime-FINALE.catchAt>1.12){setState('final-end');muteLabyrinth();}
+      if(gameTime-FINALE.catchAt>1.75){FINALE.endingAt=gameTime;setState('final-end');muteLabyrinth();}
       return;
     }
     let dx=(heldKeys.has('d')||heldKeys.has('arrowright')?1:0)-(heldKeys.has('a')||heldKeys.has('arrowleft')?1:0);
@@ -178,11 +237,12 @@
         songCaption.classList.add('visible');
         if(gameTime>=FINALE.nextSong)singLullaby();
       }else songCaption.classList.remove('visible');
-      if(player.y<1330)beginFear();
+      if(player.y<1330&&(FINALE.songFirstAt<0||gameTime-FINALE.songFirstAt>=4.8||player.y<1180))beginFear();
     }else{
       FINALE.torch=1;
       if(gameTime>=FINALE.nextSong)singLullaby();
-      if(FINALE.phase==='fear'&&gameTime-FINALE.phaseAt>1.65){FINALE.phase='chase';FINALE.phaseAt=gameTime;}
+      if(gameTime>=FINALE.nextBeat){heartbeat();FINALE.nextBeat=gameTime+(FINALE.phase==='fear'?.87:.57);}
+      if(FINALE.phase==='fear'&&gameTime-FINALE.phaseAt>2.05){FINALE.phase='chase';FINALE.phaseAt=gameTime;}
       if(FINALE.phase==='chase'){
         FINALE.manY+=dt*(287+Math.min(58,(gameTime-FINALE.phaseAt)*2.7));
         FINALE.manX+=(player.x-FINALE.manX)*Math.min(1,dt*1.65);
@@ -190,6 +250,8 @@
             || FINALE.manY>2520){beginCapture();}
       }
     }
+    if(!audioOn&& !voice.paused)voice.pause();
+    if(FINALE.phase==='chase'){voice.volume=.9;voice.playbackRate=.86;}
     const viewTarget=player.y-435;
     FINALE.cameraY+=(viewTarget-FINALE.cameraY)*(1-Math.exp(-dt*5.3));
     camera.x=0;camera.y=FINALE.cameraY;
@@ -279,7 +341,7 @@
     g.fillStyle=dark;g.fillRect(0,0,W,H);
     if(FINALE.phase==='fear'||FINALE.phase==='chase'){
       const elapsed=gameTime-FINALE.phaseAt;
-      const blink=FINALE.phase==='fear'?(Math.sin(elapsed*30)>-.12?.5:0):Math.sin(gameTime*19)>.8?.15:0;
+      const blink=FINALE.phase==='fear'?(Math.sin(elapsed*8.2)>.42?.30:0):Math.sin(gameTime*12)>.92?.11:0;
       g.fillStyle='rgba(210,210,213,'+blink+')';g.fillRect(0,0,W,H);
       if(FINALE.phase==='chase'){
         const urgency=clamp(1-Math.abs(FINALE.manY-player.y)/420,0,1);
@@ -296,6 +358,8 @@
     return oldUpdate(dt);
   };
   retry=function(full=false){
+    if(FINALE.active&&(FINALE.phase==='caught'||state==='final-end'||state==='final-credits'))return;
+    voice.pause();voice.currentTime=0;voice.playbackRate=1;
     FINALE.active=false;FINALE.touchRun=false;FINALE.phase='walk';
     hint.classList.remove('visible');songCaption.classList.remove('visible');mobileRun.classList.remove('visible');
     return oldRetry(full);
@@ -305,4 +369,5 @@
   showMap=function(){if(FINALE.active)return;return oldShowMap();};
   // Útil também para testes automatizados, sem atalho exposto ao jogador.
   window.__finaleTest66={enter:enterFinalCorridor,state:()=>({...FINALE,playerY:player.y,playerX:player.x,gameState:state})};
+  window.__finaleTest67={enter:enterFinalCorridor,state:()=>({...FINALE,playerY:player.y,gameState:state,voicePlaying:!voice.paused}),voice};
 })();
