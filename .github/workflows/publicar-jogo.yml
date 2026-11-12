@@ -8,6 +8,7 @@ on:
       - 'scripts/patch_teste60.py'
       - 'scripts/patch_teste62.py'
       - 'scripts/patch_teste63.py'
+      - 'scripts/patch_teste64.py'
       - '.github/workflows/publicar-jogo.yml'
   workflow_dispatch:
 
@@ -88,6 +89,15 @@ jobs:
           grep -q "Versão 63" site/index.html
           grep -q "luminiUnansweredMemories" site/index.html
           grep -q "luminiMemoryVisited.add" site/index.html
+
+      - name: Atualizar fala da Omega - Teste 64
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/patch_teste64.py
+          python3 scripts/patch_teste64.py site/index.html
+          grep -q "O tempo leva tudo. Até mesmo aquilo que acreditávamos ser eterno." site/index.html
+          grep -q "Versão 64" site/index.html
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
