@@ -92,8 +92,8 @@
     '<div class="credit-section">CRIAÇÃO E UNIVERSO</div>'+
     '<div class="credit-name">Gabriel Sartori</div>'+
     '<div class="credit-section">MÚSICA DO CORREDOR</div>'+
-    '<div class="credit-name">“Hush Little Baby” — TheGloomWorker</div>
-    <div class="credit-section">FREESOUND · CC0 · GRAVAÇÃO HUMANA PROCESSADA</div>'+
+    '<div class="credit-name">“Hush Little Baby” — TheGloomWorker</div>'+
+    '<div class="credit-section">FREESOUND · CC0 · GRAVAÇÃO HUMANA PROCESSADA</div>'+
     '<div class="credit-section">AGRADECIMENTOS</div>'+
     '<div class="credit-name">A todos que caminharam pelo Limiante.</div>'+
     '<div class="credit-name">A todos que ouviram seus ecos.</div>'+
