@@ -1,4 +1,4 @@
-/* Teste 69 — o corredor além da Grande Porta.
+/* Teste 70 — o corredor além da Grande Porta.
    Cena autocontida: não altera memórias, senhas ou objetos do Limiante. */
 (() => {
   'use strict';
@@ -134,6 +134,10 @@
     player={...player,x:480,y:6600,dir:'up',vx:0,vy:0,step:0,moving:false,sprinting:false,lean:0,moveBlend:0};
     camera.x=0;camera.y=FINALE.cameraY;
     heldKeys.clear();muteLabyrinth();
+    // O antigo aviso da porta nao deve acompanhar Pietro no corredor.
+    toastExpire=0;
+    $('toast').textContent='';
+    $('toast').classList.add('hidden');
     document.getElementById('location').textContent='Além da Grande Porta';
     document.getElementById('status').textContent='SÓ OS SEUS PASSOS';
     document.getElementById('prompt').classList.add('hidden');
@@ -228,6 +232,9 @@
     FINALE.endingAt=gameTime;FINALE.creditsReached=false;setState('final-end');
   }
   function updateFinal(dt){
+    // O epilogo nao usa avisos temporarios do antigo labirinto.
+    toastExpire=0;
+    $('toast').classList.add('hidden');
     FINALE.elapsed+=dt;muteLabyrinth();
     if(state==='final-end'){
       if(!FINALE.creditsReached&&gameTime-FINALE.endingAt>=3.8){
