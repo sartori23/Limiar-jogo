@@ -243,6 +243,30 @@ jobs:
           print('Teste 70: aviso da porta removido e HUD do corredor limpo.')
           PY
 
+      - name: Publicar audio mais intenso no epilogo - Teste 71
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check site/finale-teste66.js
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('site/index.html')
+          s=p.read_text(encoding='utf-8')
+          assert s.count('Versão 70 ·')==1, 'Versão 70 ausente'
+          s=s.replace('Versão 70 ·','Versão 71 ·',1)
+          s=s.replace('PRÓLOGO · TESTE 70 ·','PRÓLOGO · TESTE 71 ·')
+          s=s.replace('<title>No Limiar do Finito — Teste 70','<title>No Limiar do Finito — Teste 71')
+          p.write_text(s,encoding='utf-8')
+          js=Path('site/finale-teste66.js').read_text(encoding='utf-8')
+          assert '/* Teste 71' in js
+          assert 'function chaseMusicBeat()' in js
+          assert "voice.volume=clamp(.43+.55" in js
+          assert "chaseCompressor.ratio.value=11" in js
+          assert 'stopChaseSound();' in js
+          assert '__finaleTest71' in js
+          print('Teste 71: cantiga mais alta, fuga musical em 168 BPM e pico sonoro controlado.')
+          PY
+
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
         with:
