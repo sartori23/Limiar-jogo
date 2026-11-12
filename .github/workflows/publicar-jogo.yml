@@ -218,6 +218,31 @@ jobs:
           print('Teste 69 confirmado: fala por texto, cancao prolongada, tela preta e creditos')
           PY
 
+      - name: Retirar aviso persistente da porta - Teste 70
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check site/finale-teste66.js
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('site/index.html')
+          s=p.read_text(encoding='utf-8')
+          old="toast('O ferro cede. Agora é possível atravessar a porta.',3.5);"
+          if s.count(old)!=1:
+              raise SystemExit(f'Aviso da porta encontrado {s.count(old)} vezes; esperado 1.')
+          s=s.replace(old,'',1)
+          assert s.count('Versão 69 ·')==1, 'Versao anterior ausente'
+          s=s.replace('Versão 69 ·','Versão 70 ·',1)
+          s=s.replace('PRÓLOGO · TESTE 69 ·','PRÓLOGO · TESTE 70 ·')
+          s=s.replace('<title>No Limiar do Finito — Teste 69','<title>No Limiar do Finito — Teste 70')
+          p.write_text(s,encoding='utf-8')
+          j=Path('site/finale-teste66.js').read_text(encoding='utf-8')
+          assert "toastExpire=0" in j
+          assert "$('toast').classList.add('hidden')" in j
+          assert '/* Teste 70' in j
+          print('Teste 70: aviso da porta removido e HUD do corredor limpo.')
+          PY
+
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
         with:
