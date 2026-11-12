@@ -11,6 +11,7 @@ on:
       - 'scripts/patch_teste64.py'
       - 'scripts/patch_teste65.py'
       - 'scripts/finale-teste66.js'
+      - 'scripts/make_cantiga_test67.py'
       - '.github/workflows/publicar-jogo.yml'
   workflow_dispatch:
 
@@ -131,6 +132,31 @@ jobs:
           assert 'finale-teste66.js' in html
           assert Path('site/finale-teste66.js').stat().st_size>20000
           print('Teste 66 - corredor, cantiga, perseguicao e captura prontos.')
+          PY
+
+      - name: Produzir cantiga cantada e publicar encerramento - Teste 67
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v espeak >/dev/null || ! command -v ffmpeg >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y --no-install-recommends espeak ffmpeg
+          fi
+          python3 scripts/make_cantiga_test67.py site/cantiga-67.ogg
+          test "$(wc -c < site/cantiga-67.ogg)" -gt 10000
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('site/index.html')
+          html=p.read_text(encoding='utf-8')
+          assert html.count('Versão 66 ·')==1, 'Versão anterior não localizada'
+          html=html.replace('Versão 66 ·','Versão 67 ·',1)
+          html=html.replace('PRÓLOGO · TESTE 66 ·','PRÓLOGO · TESTE 67 ·')
+          html=html.replace('<title>No Limiar do Finito — Teste 66','<title>No Limiar do Finito — Teste 67')
+          p.write_text(html,encoding='utf-8')
+          js=Path('site/finale-teste66.js').read_text(encoding='utf-8')
+          assert 'final-credits-screen' in js and 'cantiga-67.ogg' in js
+          assert 'data:image/png;base64,' in js
+          print('Teste 67: corredor, cantiga original com voz, captura e créditos prontos')
           PY
 
       - name: Configurar GitHub Pages
