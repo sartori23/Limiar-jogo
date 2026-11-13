@@ -17,6 +17,8 @@ on:
       - 'scripts/priante-teste73.js'
       - 'scripts/priante-teste76.js'
       - 'scripts/test_priante78.js'
+      - 'scripts/build_p79.py'
+      - 'scripts/teste79.js'
       - 'scripts/patch_teste73.py'
       - 'scripts/make_cantiga_test67.py'
       - '.github/workflows/publicar-jogo.yml'
@@ -391,6 +393,43 @@ jobs:
           for marker in ['floorMaskAround','centralizeAtWall','safeDirection','miniState=\'alert\'','window.__prianteTest78','const scale=94, spriteHeight=97, topOffset=-48']:
             assert marker in js, 'Elemento ausente: '+marker
           print('Teste 78: patas, giro antecipado, repouso, investida e paredes validados.')
+          PY
+
+      - name: Nova aparicao de Lumini e animacao direcional de Pietro - Teste 79
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet pillow
+          python3 scripts/build_p79.py site/index.html site
+          cp scripts/teste79.js site/teste79.js
+          node --check site/teste79.js
+          python3 - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+          base=Path('site')
+          expected=[]
+          for mode,n in [('idle',6),('walk',8),('run',12)]:
+            for view in ('front','side','back'):
+              name=f'p79_{mode}_{view}.webp'
+              path=base/name
+              assert path.is_file() and path.stat().st_size>6000, 'Atlas ausente: '+name
+              with Image.open(path) as im:
+                assert im.size==(256*n,256), 'Tamanho incorreto: '+name
+              expected.append(name)
+          htmlpath=base/'index.html'
+          html=htmlpath.read_text(encoding='utf-8')
+          assert html.count('Versão 78 ·')==1, 'Base esperada: Teste 78'
+          anchor='<script src="priante-teste76.js"></script>'
+          assert html.count(anchor)==1, 'Script do Teste 78 ausente'
+          html=html.replace(anchor,anchor+'\n<script src="teste79.js"></script>',1)
+          html=html.replace('Versão 78 ·','Versão 79 ·',1)
+          html=html.replace('PRÓLOGO · TESTE 78 ·','PRÓLOGO · TESTE 79 ·')
+          html=html.replace('<title>No Limiar do Finito — Teste 78','<title>No Limiar do Finito — Teste 79')
+          htmlpath.write_text(html,encoding='utf-8')
+          js=(base/'teste79.js').read_text(encoding='utf-8')
+          for marker in ['drawAnimatedP=function','luminiEntranceUpdate=function','drawLuminiArrivalEffects=function','p79_','portrait_mysterious_visitor']:
+            assert marker in js, 'Modificacao ausente: '+marker
+          print('Teste 79 OK:',len(expected),'atlas direcionais e entrada de Lumini cinematografica')
           PY
 
       - name: Configurar GitHub Pages
