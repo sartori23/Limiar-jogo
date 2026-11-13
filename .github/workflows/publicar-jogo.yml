@@ -351,6 +351,26 @@ jobs:
           print('Teste 76 OK: olhos por quadro, rotacao em quatro direcoes e investida curta com recuo.')
           PY
 
+      - name: Ajustar escala visual dos Priantes - Teste 77
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check site/priante-teste76.js
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('site/index.html')
+          html=p.read_text(encoding='utf-8')
+          assert html.count('Versão 76 ·')==1, 'Base esperada: Teste 76'
+          html=html.replace('Versão 76 ·','Versão 77 ·',1)
+          html=html.replace('PRÓLOGO · TESTE 76 ·','PRÓLOGO · TESTE 77 ·')
+          html=html.replace('<title>No Limiar do Finito — Teste 76','<title>No Limiar do Finito — Teste 77')
+          p.write_text(html,encoding='utf-8')
+          js=Path('site/priante-teste76.js').read_text(encoding='utf-8')
+          for marker in ['const scale=94, spriteHeight=97, topOffset=-48', 'const pivotX=x,pivotY=y-43', 'const ly=topOffset+v/83*spriteHeight+bob', 'window.__prianteTest77=window.__prianteTest76']:
+            assert marker in js, 'Falta ajuste: '+marker
+          print('Teste 77: escala do Priante reduzida 19% e olhos/sombra ajustados; IA e colisões intactas.')
+          PY
+
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
         with:
