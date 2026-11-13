@@ -26,7 +26,7 @@ const canOccupy=(x,y,r=10)=>{
  return at(x-r,y-r)&&at(x+r,y-r)&&at(x-r,y+r)&&at(x+r,y+r);
 };
 const ctx={
- console,Math,Image:ImageMock,g:paint,map,TILE:40,MW:12,MH:12,
+ console,Math,URL,Image:ImageMock,document:{currentScript:{src:'file:///tmp/priante-teste76.js'}},g:paint,map,TILE:40,MW:12,MH:12,
  camera:{x:0,y:0},player:P,priantes:[E],
  gameTime:0,keypadMistakeCount:0,state:'play',
  scene1Active:false,scene2Active:false,scene3Active:false,
