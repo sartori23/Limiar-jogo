@@ -22,6 +22,10 @@ on:
       - 'scripts/build_release84.py'
       - 'scripts/check_teste84.py'
       - 'scripts/browser_smoke84.py'
+      - 'scripts/build_p85.py'
+      - 'scripts/teste85.js'
+      - 'scripts/check_teste85.py'
+      - 'scripts/browser_smoke85.py'
       - 'scripts/teste80.js'
       - 'scripts/teste81.js'
       - 'scripts/teste82.js'
@@ -458,6 +462,35 @@ jobs:
           set -euo pipefail
           python3 -m pip install --quiet selenium
           python3 scripts/browser_smoke84.py site
+
+      - name: Animar Pietro parte a parte e gerar Teste 85
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/build_p85.py site
+          cp scripts/teste85.js site/teste85.js
+          node --check site/teste85.js
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('site/index.html')
+          html=p.read_text(encoding='utf8')
+          assert html.count('Versão 84 ·')==1, 'A base atual não é o Teste 84'
+          assert html.count('</body>')==1
+          html=html.replace('</body>','<script src="teste85.js"></script>\n</body>',1)
+          html=html.replace('Versão 84 ·','Versão 85 ·',1)
+          html=html.replace('PRÓLOGO · TESTE 84 ·','PRÓLOGO · TESTE 85 ·',1)
+          html=html.replace('<title>No Limiar do Finito — Teste 84','<title>No Limiar do Finito — Teste 85',1)
+          p.write_text(html,encoding='utf8')
+          Path('site/teste85.html').write_text(html,encoding='utf8')
+          print('TESTE 85 CRIADO: etapa 1 parado, 2 caminhada, 3 corrida, 4 transições')
+          PY
+          python3 scripts/check_teste85.py site
+
+      - name: Confirmar movimentacao de Pietro no navegador - Teste 85
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/browser_smoke85.py site
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
