@@ -19,6 +19,14 @@ on:
       - 'scripts/test_priante78.js'
       - 'scripts/build_p79.py'
       - 'scripts/teste79.js'
+      - 'scripts/build_release84.py'
+      - 'scripts/check_teste84.py'
+      - 'scripts/browser_smoke84.py'
+      - 'scripts/teste80.js'
+      - 'scripts/teste81.js'
+      - 'scripts/teste82.js'
+      - 'scripts/teste83.js'
+      - 'scripts/teste84.js'
       - 'scripts/patch_teste73.py'
       - 'scripts/make_cantiga_test67.py'
       - '.github/workflows/publicar-jogo.yml'
@@ -431,6 +439,25 @@ jobs:
             assert marker in js, 'Modificacao ausente: '+marker
           print('Teste 79 OK:',len(expected),'atlas direcionais e entrada de Lumini cinematografica')
           PY
+
+      - name: Revisar em ordem Testes 80 a 84 e publicar as cinco versoes
+        shell: bash
+        run: |
+          set -euo pipefail
+          for v in 80 81 82 83 84; do
+            cp "scripts/teste${v}.js" "site/teste${v}.js"
+            node --check "site/teste${v}.js"
+          done
+          python3 scripts/build_release84.py site
+          python3 scripts/check_teste84.py site
+          echo "Testes 80, 81, 82, 83 e 84 prontos para revisao."
+
+      - name: Testar versao consolidada em navegador Chrome - Teste 84
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet selenium
+          python3 scripts/browser_smoke84.py site
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
