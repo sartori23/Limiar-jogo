@@ -16,6 +16,7 @@ on:
       - 'scripts/priante_atlas73.b64'
       - 'scripts/priante-teste73.js'
       - 'scripts/priante-teste76.js'
+      - 'scripts/test_priante78.js'
       - 'scripts/patch_teste73.py'
       - 'scripts/make_cantiga_test67.py'
       - '.github/workflows/publicar-jogo.yml'
@@ -369,6 +370,27 @@ jobs:
           for marker in ['const scale=94, spriteHeight=97, topOffset=-48', 'const pivotX=x,pivotY=y-43', 'const ly=topOffset+v/83*spriteHeight+bob', 'window.__prianteTest77=window.__prianteTest76']:
             assert marker in js, 'Falta ajuste: '+marker
           print('Teste 77: escala do Priante reduzida 19% e olhos/sombra ajustados; IA e colisões intactas.')
+          PY
+
+      - name: Melhorar patas, alertas e movimentacao junto as paredes - Teste 78
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check site/priante-teste76.js
+          node scripts/test_priante78.js
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('site/index.html')
+          html=p.read_text(encoding='utf-8')
+          assert html.count('Versão 77 ·')==1, 'Base esperada: Teste 77'
+          html=html.replace('Versão 77 ·','Versão 78 ·',1)
+          html=html.replace('PRÓLOGO · TESTE 77 ·','PRÓLOGO · TESTE 78 ·')
+          html=html.replace('<title>No Limiar do Finito — Teste 77','<title>No Limiar do Finito — Teste 78')
+          p.write_text(html,encoding='utf-8')
+          js=Path('site/priante-teste76.js').read_text(encoding='utf-8')
+          for marker in ['floorMaskAround','centralizeAtWall','safeDirection','miniState=\'alert\'','window.__prianteTest78','const scale=94, spriteHeight=97, topOffset=-48']:
+            assert marker in js, 'Elemento ausente: '+marker
+          print('Teste 78: patas, giro antecipado, repouso, investida e paredes validados.')
           PY
 
       - name: Configurar GitHub Pages
