@@ -1,4 +1,4 @@
-/* Teste 76 — Priantes: direção do corpo, olhos no rosto e investida curta.
+/* Teste 77 — Priantes: direção do corpo, olhos no rosto e investida curta.
  * Preserva atlas 73, colisões e comportamentos de erro do teclado.
  */
 (()=>{
@@ -102,17 +102,18 @@
     // A oscilação é pequena: não gira o monstro separadamente de suas patas.
     const bodyTilt=moving?Math.sin(steps/13+(o.seed||0))*.009:0;
     const angle=facing+bodyTilt;
-    const scale=116;
-    const pivotX=x,pivotY=y-54;
+    // 19% menor: escala visual, não mexe no comportamento nem nas colisões.
+    const scale=94, spriteHeight=97, topOffset=-48;
+    const pivotX=x,pivotY=y-43;
     g.save();
     g.fillStyle='rgba(0,0,0,.48)';
     g.beginPath();
-    g.ellipse(x,y-9,25+intensity*2,7.2,0,0,Math.PI*2);
+    g.ellipse(x,y-7,20.2+intensity*1.6,5.9,0,0,Math.PI*2);
     g.fill();
     g.translate(pivotX,pivotY);
     g.rotate(angle);
     g.imageSmoothingEnabled=false;
-    g.drawImage(atlas,frame*80,0,80,83,-scale/2,-60+bob,scale,120);
+    g.drawImage(atlas,frame*80,0,80,83,-scale/2,topOffset+bob,scale,spriteHeight);
     g.restore();
     // Os pontos vermelhos são calculados nas coordenadas da MESMA pose e
     // transformados pelo MESMO ângulo e balanço do corpo. Sem globo solto.
@@ -121,7 +122,7 @@
     for(let i=0;i<eyes.length;i++){
       const [u,v]=eyes[i];
       const lx=(u/80-.5)*scale;
-      const ly=-60+v/83*120+bob;
+      const ly=topOffset+v/83*spriteHeight+bob;
       eyeLights.push({
         x:pivotX+lx*cs-ly*sn,
         y:pivotY+lx*sn+ly*cs,
@@ -136,7 +137,7 @@
   glowOnEye=function(x,y,weight,seed){
     if(!atlasLoaded)return originalGlow(x,y,weight,seed);
     const pulse=.86+.14*Math.sin(gameTime*6+seed);
-    const r=3.2;
+    const r=2.7;
     g.save();
     g.globalCompositeOperation='screen';
     g.globalAlpha=Math.min(.54,weight*.63)*pulse;
@@ -153,4 +154,5 @@
     image:atlas,
     sample:()=>priantes.slice(0,3).map(p=>({angle:p.facingAngle||0,shortPursuit:p.miniState||null,frame:walkFrames[Math.floor((p.walkDistance||0)/6.6)%6]}))
   };
+  window.__prianteTest77=window.__prianteTest76;
 })();
