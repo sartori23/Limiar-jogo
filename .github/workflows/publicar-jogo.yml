@@ -15,6 +15,7 @@ on:
       - 'scripts/build_soundtrack72.py'
       - 'scripts/priante_atlas73.b64'
       - 'scripts/priante-teste73.js'
+      - 'scripts/priante-teste76.js'
       - 'scripts/patch_teste73.py'
       - 'scripts/make_cantiga_test67.py'
       - '.github/workflows/publicar-jogo.yml'
@@ -324,6 +325,31 @@ jobs:
           grep -q "priante-teste73.js" site/index.html
           grep -q "SCENE2_CAST\[id\]?.lines" site/index.html
           echo "Teste 73: Priantes animados e falas da Cena Incompleta preservadas."
+
+      - name: Corrigir olhos e orientar a animacao dos Priantes - Teste 76
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp scripts/priante-teste76.js site/priante-teste76.js
+          node --check site/priante-teste76.js
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('site/index.html')
+          html=p.read_text(encoding='utf-8')
+          assert html.count('Versão 73 ·')==1, 'Base publicada precisa ser o Teste 73'
+          marker='<script src="priante-teste73.js"></script>'
+          assert html.count(marker)==1, 'Novo controlador precisa carregar apos o atlas animado'
+          html=html.replace(marker,marker+'\n<script src="priante-teste76.js"></script>',1)
+          html=html.replace('Versão 73 ·','Versão 76 ·',1)
+          html=html.replace('PRÓLOGO · TESTE 73 ·','PRÓLOGO · TESTE 76 ·')
+          html=html.replace('<title>No Limiar do Finito — Teste 73','<title>No Limiar do Finito — Teste 76')
+          p.write_text(html,encoding='utf-8')
+          js=Path('site/priante-teste76.js').read_text(encoding='utf-8')
+          for token in ['eyesByFrame','shortestAngle','microChases','canPrianteReach','originalUpdate(dt)','walkFrames','glowOnEye=function','__prianteTest76']:
+            assert token in js, 'Falta elemento do ajuste: '+token
+          assert (Path('site/priante73.webp').stat().st_size>3000)
+          print('Teste 76 OK: olhos por quadro, rotacao em quatro direcoes e investida curta com recuo.')
+          PY
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
