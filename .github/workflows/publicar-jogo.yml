@@ -26,6 +26,11 @@ on:
       - 'scripts/teste85.js'
       - 'scripts/check_teste85.py'
       - 'scripts/browser_smoke85.py'
+      - 'assets/pietro86_atlases_b64.txt'
+      - 'scripts/build_p87.py'
+      - 'scripts/teste87.js'
+      - 'scripts/check_teste87.py'
+      - 'scripts/browser_smoke87.py'
       - 'scripts/teste80.js'
       - 'scripts/teste81.js'
       - 'scripts/teste82.js'
@@ -491,6 +496,37 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/browser_smoke85.py site
+
+      - name: Integrar as 12 animacoes aprovadas de Pietro - Teste 87
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/build_p87.py site assets/pietro86_atlases_b64.txt
+          cp scripts/teste87.js site/teste87.js
+          node --check site/teste87.js
+          node --check site/p87_offsets.js
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('site/index.html')
+          s=p.read_text(encoding='utf8')
+          assert s.count('Versão 85 ·')==1, 'Base anterior do jogo não é o Teste 85'
+          assert s.count('</body>')==1
+          scripts='<script src="p87_offsets.js"></script>\\n<script src="teste87.js"></script>\\n'
+          s=s.replace('</body>',scripts+'</body>',1)
+          s=s.replace('Versão 85 ·','Versão 87 ·',1)
+          s=s.replace('PRÓLOGO · TESTE 85 ·','PRÓLOGO · TESTE 87 ·',1)
+          s=s.replace('<title>No Limiar do Finito — Teste 85','<title>No Limiar do Finito — Teste 87',1)
+          p.write_text(s,encoding='utf8')
+          Path('site/teste87.html').write_text(s,encoding='utf8')
+          print('TESTE 87 criado mantendo todo o jogo e as 12 animações aprovadas.')
+          PY
+          python3 scripts/check_teste87.py site
+
+      - name: Testar 12 sprites e movimento de Pietro no Chrome - Teste 87
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/browser_smoke87.py site
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
