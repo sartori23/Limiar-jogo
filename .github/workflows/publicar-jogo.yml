@@ -31,6 +31,10 @@ on:
       - 'scripts/teste87.js'
       - 'scripts/check_teste87.py'
       - 'scripts/browser_smoke87.py'
+      - 'scripts/build_p88.py'
+      - 'scripts/teste88.js'
+      - 'scripts/check_teste88.py'
+      - 'scripts/browser_smoke88.py'
       - 'scripts/teste80.js'
       - 'scripts/teste81.js'
       - 'scripts/teste82.js'
@@ -527,6 +531,36 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/browser_smoke87.py site
+
+      - name: Uniformizar Pietro de costas e corrigir recortes frontais - Teste 88
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/build_p88.py site
+          cp scripts/teste88.js site/teste88.js
+          node --check site/teste88.js
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('site/index.html')
+          html=p.read_text(encoding='utf8')
+          assert html.count('Versão 87 ·')==1, 'A base atual precisa ser o Teste 87'
+          assert html.count('</body>')==1
+          assert html.count('<script src="teste87.js"></script>')==1
+          html=html.replace('</body>','<script src="teste88.js"></script>\n</body>',1)
+          html=html.replace('Versão 87 ·','Versão 88 ·',1)
+          html=html.replace('PRÓLOGO · TESTE 87 ·','PRÓLOGO · TESTE 88 ·',1)
+          html=html.replace('<title>No Limiar do Finito — Teste 87','<title>No Limiar do Finito — Teste 88',1)
+          p.write_text(html,encoding='utf8')
+          Path('site/teste88.html').write_text(html,encoding='utf8')
+          print('Teste 88 integrado às 3 memórias sem modificar o Teste 87.')
+          PY
+          python3 scripts/check_teste88.py site
+
+      - name: Testar sprites corrigidos em todos os mapas no Chrome - Teste 88
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/browser_smoke88.py site
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
