@@ -570,28 +570,6 @@ jobs:
           set -euo pipefail
           python3 scripts/browser_smoke88.py site
 
-      - name: Corrigir proporcao de Pietro e corrida frontal - Teste 88
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 scripts/build_p88.py site
-          cp scripts/teste88.js site/teste88.js
-          node --check site/teste88.js
-          python3 - <<'PY'
-          from pathlib import Path
-          p=Path('site/index.html')
-          html=p.read_text(encoding='utf8')
-          assert html.count('Versão 87 ·')==1, 'Esperado Teste 87'
-          assert html.count('</body>')==1
-          html=html.replace('</body>','<script src="teste88.js"></script>\n</body>',1)
-          html=html.replace('Versão 87 ·','Versão 88 ·',1)
-          html=html.replace('PRÓLOGO · TESTE 87 ·','PRÓLOGO · TESTE 88 ·',1)
-          html=html.replace('<title>No Limiar do Finito — Teste 87','<title>No Limiar do Finito — Teste 88',1)
-          p.write_text(html,encoding='utf8')
-          Path('site/teste88.html').write_text(html,encoding='utf8')
-          PY
-          python3 scripts/check_teste88.py site
-
       - name: Aviso de corrida breve, closer final e YouTube nos creditos - Teste 89
         shell: bash
         run: |
