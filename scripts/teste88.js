@@ -26,6 +26,17 @@
     return !!(im&&im.complete&&im.naturalWidth===256*counts[key.split('_')[0]]&&
        im.naturalHeight===256);
   }
+  function alphaBounds(canvas){
+    const data=canvas.getContext('2d',{willReadFrequently:true}).getImageData(0,0,256,256).data;
+    let x1=256,x2=0,y1=256,y2=0,nontransparent=0;
+    for(let y=0;y<256;y++)for(let x=0;x<256;x++){
+      if(data[(y*256+x)*4+3]<12)continue;
+      x1=Math.min(x1,x);x2=Math.max(x2,x+1);
+      y1=Math.min(y1,y);y2=Math.max(y2,y+1);
+      nontransparent++;
+    }
+    return nontransparent?[x1,y1,x2,y2]:null;
+  }
   function frame(key,index){
     const sprite=images[key],mode=key.split('_')[0];
     const count=counts[mode];
@@ -33,12 +44,29 @@
     const idx=((index%count)+count)%count;
     const id=key+'_'+idx;
     if(buffers[id])return buffers[id];
+    const raw=document.createElement('canvas');
+    raw.width=raw.height=256;
+    const rawCtx=raw.getContext('2d',{alpha:true});
+    rawCtx.imageSmoothingEnabled=false;
+    rawCtx.clearRect(0,0,256,256);
+    rawCtx.drawImage(sprite,idx*256,0,256,256,0,0,256,256);
+    const box=alphaBounds(raw);
+    if(!box)return null;
+    // O decodificador de alguns navegadores entrega quadros com margens
+    // distintas. Normalizamos o CONTEÚDO VISÍVEL no Canvas já carregado.
+    const targetTop=key==='run_down'?20:22,targetBottom=233;
+    const targetHeight=targetBottom-targetTop;
+    const originalWidth=box[2]-box[0],originalHeight=box[3]-box[1];
+    const targetWidth=key==='run_down'
+      ?Math.min(126,Math.max(108,Math.round(originalWidth*targetHeight/originalHeight)))
+      :96;
     const canvas=document.createElement('canvas');
-    canvas.width=256;canvas.height=256;
-    const context=canvas.getContext('2d',{alpha:true});
-    context.imageSmoothingEnabled=false;
-    context.clearRect(0,0,256,256);
-    context.drawImage(sprite,idx*256,0,256,256,0,0,256,256);
+    canvas.width=canvas.height=256;
+    const ctx=canvas.getContext('2d',{alpha:true});
+    ctx.imageSmoothingEnabled=false;
+    ctx.clearRect(0,0,256,256);
+    ctx.drawImage(raw,box[0],box[1],originalWidth,originalHeight,
+      Math.round(128-targetWidth/2),targetTop,targetWidth,targetHeight);
     buffers[id]=canvas;
     return canvas;
   }
