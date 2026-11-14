@@ -35,6 +35,11 @@ changes=[
  "aproximação leve no enquadramento final",
 ),
 (
+ "    voice.volume=clamp(.43+.55*(1-distance/4900),.42,.97);",
+ "    voice.volume=clamp(.40+.42*(1-distance/4900),.38,.84);",
+ "volume da cantiga limitado sem distorção",
+),
+(
  "    const bob=player.moving?Math.sin(gameTime*(player.sprinting?18:12))*3.4:0;",
  "    const bob=player.moving?Math.sin(gameTime*(player.sprinting?18:12))*1.8:0;",
  "animação do P sem balanço excessivo na fuga",
