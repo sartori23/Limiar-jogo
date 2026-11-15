@@ -148,7 +148,7 @@
       tranceCount,trancePlaying,chorusSounds,awards,
       thirdDigit:clues.arquivo??null,
       hadAllSixResearchComments:scene3DiscussedIds.size===6,
-      musicFrom95B:!!window.__teste95b
+      musicFrom95B:!!window.__teste95B
     })
   };
 })();
