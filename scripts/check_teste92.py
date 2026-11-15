@@ -27,7 +27,7 @@ for snippet in ['SCENE2_OBSERVE_TEXT','scene2DisplayName','scene3DisplayName',
 for script in ('teste92.js','finale-teste92.js'):
     subprocess.run(['node','--check',str(root/script)],check=True,timeout=20)
 finale=(root/'finale-teste92.js').read_text(encoding='utf8')
-for m in ['TESTE 92','rebites','ferragens','marcas de arrasto','marca','const block=Math.floor(cameraTop/91)+i',
+for m in ['TESTE 92','rebites','ferragens','Marcas de arrasto','marca','const block=Math.floor(cameraTop/91)+i',
           'glow(474,Math.round(H*.66),175','const closingSpeedBonus=158*finalStretch']:
     if m=='marca':continue
     assert m in finale,m
