@@ -12,7 +12,10 @@ def change(path,old,new,label):
     assert src.count(old)==1,(label,src.count(old))
     path.write_text(src.replace(old,new,1),encoding='utf8')
 
-music=site/'soundtrack-teste72.js'
+from shutil import copy2
+copy2(site/'soundtrack-teste72.js',site/'soundtrack-teste90.js')
+copy2(site/'finale-teste66.js',site/'finale-teste90.js')
+music=site/'soundtrack-teste90.js'
 change(music,"    ceu:{file:'ceu.ogg',gain:.34},","    ceu:{file:'ceu.ogg',gain:.12},",'volume céu')
 change(music,"  let active=null,lastCheck=-999;","  let active=null,lastCheck=-999,prianteLatched=false;",'histerese')
 start="""  function nearPriantes(){
@@ -62,12 +65,9 @@ change(html,
  "function playHarpPhrase(){\n  if(window.__soundtrackTest72?.status?.().active==='ceu')return;\n  if(!audioCtx)return;",
  'harpa duplicada')
 # Recupera silêncio em Samael: é controlado pela própria cena.
-# Ajuste de mistura tardio (teste 83/89) para não elevar céu novamente.
-for script in (site/'teste83.js',site/'teste89.js'):
-  old='ceu:.37' if script.name=='teste83.js' else 'ceu:.31'
-  change(script,old,'ceu:.12','ganho céu em '+script.name)
+# A mixagem final é sobrescrita apenas pelo Teste 90, sem alterar 83/89.
 
-final=site/'finale-teste66.js'
+final=site/'finale-teste90.js'
 change(final,
  "        const finalStretch=clamp((FINALE.manY-2080)/360,0,1);",
  "        const finalStretch=clamp((FINALE.manY-1950)/480,0,1);",
