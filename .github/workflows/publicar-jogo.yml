@@ -55,6 +55,10 @@ on:
       - 'scripts/teste94.js'
       - 'scripts/check_teste94.py'
       - 'scripts/browser_smoke94.py'
+      - 'scripts/build_p95.py'
+      - 'scripts/teste95a.js'
+      - 'scripts/browser_smoke95a.py'
+      - 'assets/**'
       - 'assets/pietro86_atlases_b64.txt'
       - 'scripts/build_p87.py'
       - 'scripts/teste87.js'
@@ -780,6 +784,28 @@ jobs:
           python3 scripts/browser_smoke94.py site
           rm site/smoke94.mp3
           echo "TESTE 94: cache no navegador e áudio isolado validados."
+
+      - name: ETAPA A — usar os 32 sprites corrigidos do GitHub - Teste 95A
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/build_p95.py site
+          cp scripts/teste95a.js site/teste95a.js
+          node --check site/teste95a.js
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('site/index.html')
+          s=p.read_text(encoding='utf8')
+          assert s.count('Versão 94 ·')==1, 'Base esperada Teste 94'
+          assert s.count('</body>')==1
+          s=s.replace('</body>','<script src="teste95a.js"></script>\n</body>',1)
+          s=s.replace('Versão 94 ·','Versão 95A ·',1)
+          s=s.replace('PRÓLOGO · TESTE 94 ·','PRÓLOGO · TESTE 95A ·',1)
+          s=s.replace('<title>No Limiar do Finito — Teste 94','<title>No Limiar do Finito — Teste 95A',1)
+          p.write_text(s,encoding='utf8')
+          Path('site/teste95a.html').write_text(s,encoding='utf8')
+          PY
+          python3 scripts/browser_smoke95a.py site
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
