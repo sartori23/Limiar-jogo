@@ -39,6 +39,30 @@ replace_once("'Perguntas iniciais: '+luminiAsked.size+' / 3 · Memórias comenta
              "'Escolha o que deseja perguntar. · Memórias comentadas: '+luminiMemoryAsked.size+' / '+luminiMemoryVisited.size+'.'",
              "Status de memórias de Lumini")
 
+# O PAUSE da versão para jogadores não apresenta teleporte nem controles
+# de QA. Removemos também seus handlers para que os botões ausentes não
+# causem erro em init(). O reinício normal permanece disponível.
+teleport_ids=("sky","gate","scene2","scene3")
+for tid in teleport_ids:
+    pattern=rf'<button class="secondary" id="pause-{tid}">[^<]*</button>'
+    s,count=re.subn(pattern,"",s)
+    if count != 1:
+        raise SystemExit(f"Botão de teleporte {tid}: esperado 1, encontrados {count}")
+    handler=rf"(?m)^  \\$('pause-{tid}')\\.onclick=.*\\n"
+    # Escapa o seletor literal e remove exclusivamente a linha do handler.
+    handler=re.compile(r"(?m)^  "+re.escape("$('pause-"+tid+"').onclick=")+r"[^\\n]*\\n")
+    s,count=handler.subn("",s)
+    if count != 1:
+        raise SystemExit(f"Handler de teleporte {tid}: esperado 1, encontrados {count}")
+replace_once('<button class="secondary" id="pause-restart">RECOMEÇAR TESTE</button>',
+             '<button class="secondary" id="pause-restart">RECOMEÇAR JOGO</button>',
+             "Reinício normal do jogo")
+for tid in teleport_ids:
+    assert f'pause-{tid}' not in s, f"Controle de teste ainda presente: {tid}"
+assert 'RECOMEÇAR TESTE' not in s
+assert "$('pause-restart').onclick=()=>retry(true)" in s
+assert "$('resume-btn').onclick=()=>setState('play')" in s
+
 # Aparência: apenas as superfícies externas e a abertura; não encosta
 # no canvas, sprites, música, diálogos, atlas ou no gameplay.
 css=r"""
