@@ -64,6 +64,7 @@ on:
       - 'scripts/teste96.js'
       - 'scripts/check_teste96.py'
       - 'scripts/browser_smoke96.py'
+      - 'scripts/release_players.py'
       - 'assets/**'
       - 'assets/pietro86_atlases_b64.txt'
       - 'scripts/build_p87.py'
@@ -872,6 +873,17 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/browser_smoke96.py site
+
+      - name: Preparar edicao publica para jogadores
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/release_players.py
+          python3 scripts/release_players.py site
+          grep -q 'JOGAR <span>↗</span>' site/index.html
+          grep -q 'id="player-release-style"' site/index.html
+          grep -q 'Versão 96 ·' site/teste96.html
+          ! grep -q 'Escolha três perguntas' site/index.html
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
