@@ -94,7 +94,16 @@
    '♪ Mama’s gonna buy you a mockingbird... ♪',
    '♪ And if that mockingbird don’t sing... ♪'
  ];
- const hint=document.getElementById('cantiga-resgate94');
+ const voiceHint=document.createElement('button');
+ voiceHint.type='button';voiceHint.id='cantiga-unlock95b';
+ voiceHint.textContent='♪ Ativar a cantiga';
+ voiceHint.style.cssText='position:absolute;right:12px;bottom:15%;z-index:26;display:none;background:#25151a;border:1px solid #7d434b;border-radius:5px;padding:7px 10px;color:#e3b9a9;font:12px Georgia,serif;cursor:pointer;';
+ document.getElementById('viewport')?.append(voiceHint);
+ voiceHint.addEventListener('click',()=>{
+   if(!voice)return;
+   voice.play().then(()=>{cantigaStarted=true;voiceHint.style.display='none';})
+     .catch(e=>errors.push('Cantiga, ativação manual: '+String(e)));
+ });
  if(voice){
    voice.preload='auto';voice.loop=true;
    voice.addEventListener('error',()=>{
@@ -106,17 +115,17 @@
    if(!voice||!f?.active)return;
    const shouldPlay=audioOn && state==='play' && f.phase==='walk' && player.y<5600;
    if(!shouldPlay){
-     if(f.phase!=='walk')hint?.classList.remove('visible');
+     if(f.phase!=='walk')voiceHint.style.display='none';
      return;
    }
    if(voice.readyState===0)voice.load();
    voice.volume=.76;
    if(voice.paused && gameTime-cantigaLast>1.6){
      cantigaLast=gameTime;cantigaTries++;
-     voice.play().then(()=>{cantigaStarted=true;hint?.classList.remove('visible');})
+     voice.play().then(()=>{cantigaStarted=true;voiceHint.style.display='none';})
        .catch(e=>{
          errors.push('Cantiga bloqueada: '+String(e));
-         hint?.classList.add('visible');
+         voiceHint.style.display='block';
        });
    }
    const caption=document.getElementById('final-song');
