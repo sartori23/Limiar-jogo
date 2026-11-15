@@ -270,6 +270,7 @@ window.__teste94={
    cantigaError:chantError,voiceReady:voice?.readyState??0,
    errors:cacheError
   }),
-  prepare:()=>notifyReady()
+  prepare:()=>notifyReady(),
+  installLocal:(payload)=>install(payload)
 };
 })();
