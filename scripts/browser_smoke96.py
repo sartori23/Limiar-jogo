@@ -89,7 +89,7 @@ with socketserver.TCPServer(('127.0.0.1',0),Quiet) as server:
           return result;
         """)
         assert result['digit']=='7' and not result['trance'] and result['awards']==1,result
-        assert result['speaker']=='P' and 'Sete' in result['note'],result
+        assert result['speaker']=='P' and 'três vozes' in result['note'],result
         preserve=browser.execute_script("""
           return {runReady:window.__teste95a?.status?.()?.readyCount??null,
             mp3:!!window.__teste95B,
