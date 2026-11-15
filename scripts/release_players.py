@@ -48,12 +48,13 @@ for tid in teleport_ids:
     s,count=re.subn(pattern,"",s)
     if count != 1:
         raise SystemExit(f"Botão de teleporte {tid}: esperado 1, encontrados {count}")
-    handler=rf"(?m)^  \\$('pause-{tid}')\\.onclick=.*\\n"
-    # Escapa o seletor literal e remove exclusivamente a linha do handler.
-    handler=re.compile(r"(?m)^  "+re.escape("$('pause-"+tid+"').onclick=")+r"[^\\n]*\\n")
-    s,count=handler.subn("",s)
-    if count != 1:
-        raise SystemExit(f"Handler de teleporte {tid}: esperado 1, encontrados {count}")
+    handler_prefix="  $('pause-"+tid+"').onclick="
+    lines=s.splitlines(keepends=True)
+    matches=[i for i,line in enumerate(lines) if line.startswith(handler_prefix)]
+    if len(matches)!=1:
+        raise SystemExit(f"Handler de teleporte {tid}: esperado 1, encontrados {len(matches)}")
+    del lines[matches[0]]
+    s="".join(lines)
 replace_once('<button class="secondary" id="pause-restart">RECOMEÇAR TESTE</button>',
              '<button class="secondary" id="pause-restart">RECOMEÇAR JOGO</button>',
              "Reinício normal do jogo")
