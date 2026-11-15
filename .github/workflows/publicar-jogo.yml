@@ -44,6 +44,11 @@ on:
       - 'scripts/teste91.js'
       - 'scripts/check_teste91.py'
       - 'scripts/browser_smoke91.py'
+      - 'scripts/patch_teste92.py'
+      - 'scripts/patch_corredor92.py'
+      - 'scripts/teste92.js'
+      - 'scripts/check_teste92.py'
+      - 'scripts/browser_smoke92.py'
       - 'assets/pietro86_atlases_b64.txt'
       - 'scripts/build_p87.py'
       - 'scripts/teste87.js'
@@ -674,6 +679,39 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/browser_smoke91.py site
+
+      - name: Restaurar corrida, corrigir primeira pergunta e detalhar corredor - Teste 92
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/patch_teste92.py site
+          python3 scripts/patch_corredor92.py site
+          cp scripts/teste92.js site/teste92.js
+          node --check site/teste92.js
+          node --check site/finale-teste92.js
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('site/index.html')
+          s=p.read_text(encoding='utf8')
+          assert s.count('Versão 91 ·')==1,'Base esperada: Teste 91'
+          marker='<script src="finale-teste90.js"></script>'
+          assert s.count(marker)==1,'Script de perseguição não encontrado'
+          s=s.replace(marker,'<script src="finale-teste92.js"></script>',1)
+          assert s.count('</body>')==1
+          s=s.replace('</body>','<script src="teste92.js"></script>\n</body>',1)
+          s=s.replace('Versão 91 ·','Versão 92 ·',1)
+          s=s.replace('PRÓLOGO · TESTE 91 ·','PRÓLOGO · TESTE 92 ·',1)
+          s=s.replace('<title>No Limiar do Finito — Teste 91','<title>No Limiar do Finito — Teste 92',1)
+          p.write_text(s,encoding='utf8')
+          Path('site/teste92.html').write_text(s,encoding='utf8')
+          PY
+          python3 scripts/check_teste92.py site
+
+      - name: Testar corrida, Lumini e corredor no navegador - Teste 92
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/browser_smoke92.py site
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
