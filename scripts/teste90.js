@@ -181,6 +181,9 @@
  const oldUpdate=update;
  update=function(dt){
    const result=oldUpdate(dt);
+   // O Teste 89 ainda mantém uma mixagem antiga; a prioridade do Céu agora é 12%.
+   const soundtrack90=window.__soundtrackTest72;
+   if(soundtrack90?.tracks?.ceu)soundtrack90.tracks.ceu.gain=.12;
    if(state==='final-credits'){
      if(!started)autoStart();
      musicGain();
