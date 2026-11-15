@@ -58,6 +58,9 @@ on:
       - 'scripts/build_p95.py'
       - 'scripts/teste95a.js'
       - 'scripts/browser_smoke95a.py'
+      - 'scripts/build_spare95b.py'
+      - 'scripts/teste95b.js'
+      - 'scripts/browser_smoke95b.py'
       - 'assets/**'
       - 'assets/pietro86_atlases_b64.txt'
       - 'scripts/build_p87.py'
@@ -806,6 +809,39 @@ jobs:
           Path('site/teste95a.html').write_text(s,encoding='utf8')
           PY
           python3 scripts/browser_smoke95a.py site
+
+      - name: ETAPA B — publicar Spare Hearts original e restaurar cantiga - Teste 95B
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/build_spare95b.py site
+          cp scripts/teste95b.js site/teste95b.js
+          node --check site/teste95b.js
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('site/index.html')
+          s=p.read_text(encoding='utf8')
+          assert s.count('Versão 95A ·')==1, 'Base esperada Teste 95A'
+          # Desativa definitivamente o sistema antigo de ativação local,
+          # pois sprites e MP3 agora estão publicados como arquivos reais.
+          marker='<script src="teste94.js"></script>'
+          assert s.count(marker)==1
+          s=s.replace(marker,'',1)
+          assert s.count('</body>')==1
+          s=s.replace('</body>','<script src="teste95b.js"></script>\n</body>',1)
+          s=s.replace('Versão 95A ·','Versão 95B ·',1)
+          s=s.replace('PRÓLOGO · TESTE 95A ·','PRÓLOGO · TESTE 95B ·',1)
+          s=s.replace('<title>No Limiar do Finito — Teste 95A','<title>No Limiar do Finito — Teste 95B',1)
+          p.write_text(s,encoding='utf8')
+          Path('site/teste95b.html').write_text(s,encoding='utf8')
+          print('ETAPA B: MP3 ORIGINAL DISPONIVEL ONLINE, SEM PLAYER YOUTUBE OU ATIVADOR.')
+          PY
+
+      - name: Testar musica e cantiga no Chrome com reproducao REAL - Teste 95B
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/browser_smoke95b.py site
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
