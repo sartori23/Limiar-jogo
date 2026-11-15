@@ -41,7 +41,8 @@ css="""
   styles.textContent+=[
     '#final-corridor-hint{left:0!important;right:0!important;top:42%!important;bottom:auto!important;width:100%!important;max-width:none!important;transform:none!important;animation:none!important;display:none!important;height:78px!important}',
     '#final-corridor-hint.visible{display:block!important}',
-    '#final-corridor-hint .hint-side90{position:absolute;top:0;display:block;width:23%;text-align:center;animation:finalRunPulse .46s steps(2) infinite}',
+    '#final-corridor-hint .hint-side90{position:absolute;top:0;display:block;width:23%;text-align:center;animation:warningSide90 .46s steps(2) infinite}',
+    '@keyframes warningSide90{0%,100%{opacity:1}50%{opacity:.56}}',
     '#final-corridor-hint .hint-left90{left:2%}',
     '#final-corridor-hint .hint-right90{right:2%}',
     '#final-corridor-hint .hint-side90 small{font-size:9px;letter-spacing:.015em;line-height:1.5;white-space:normal}',
