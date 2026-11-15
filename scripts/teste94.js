@@ -94,7 +94,9 @@ musicButton.type='button';musicButton.textContent='Ativar Spare Hearts neste nav
 const mp3input=document.createElement('input');mp3input.type='file';mp3input.accept='audio/mpeg,.mp3';
 helper.append(musicButton,mp3input);
 creditsScreen?.append(helper);
-musicButton.onclick=()=>mp3input.click();
+musicButton.onclick=()=>{
+ if(hasPersonalSong)startCredits();else mp3input.click();
+};
 mp3input.onchange=async()=>{
  const f=mp3input.files?.[0];if(!f)return;
  if(f.size>25_000_000||f.size<2_000_000){musicButton.textContent='Arquivo inválido — selecione o MP3';return;}
@@ -181,7 +183,7 @@ async function install(msg){
     throw Error('MP3 ausente na preparação');
  const blob=decodeBase64DataUrl(data);
  await saveAsset(AUDIO_KEY,blob);
- useSong(blob);importedAt=Date.now();
+ useSong(blob);importedAt=Date.now();correctMusicReference();
  musicButton.textContent='Spare Hearts instalada ✓';musicButton.hidden=true;
  return {directions:installedDirs.size,bytes:blob.size};
 }
@@ -242,6 +244,7 @@ function startCredits(){
  }).catch(e=>{
    creditPlaying=false;cacheError='Reprodução bloqueada: '+String(e);
    musicButton.textContent='▶ Ativar Spare Hearts';musicButton.hidden=false;
+   if(window.__soundtrackTest72?.tracks?.creditos)window.__soundtrackTest72.tracks.creditos.gain=.22;
  });
 }
 priorUpdate&& (update=function(dt){
@@ -250,7 +253,7 @@ priorUpdate&& (update=function(dt){
  if(state==='final-credits'){
    if(hasPersonalSong){
      if(!creditsCalled)startCredits();
-     if(window.__soundtrackTest72?.tracks?.creditos)window.__soundtrackTest72.tracks.creditos.gain=0;
+     if(window.__soundtrackTest72?.tracks?.creditos)window.__soundtrackTest72.tracks.creditos.gain=creditPlaying?0:.22;
    }else{
      musicButton.textContent='Escolher MP3 Spare Hearts (uma vez)';musicButton.hidden=false;
    }
@@ -260,6 +263,19 @@ priorUpdate&& (update=function(dt){
  return ret;
 });
 retry=function(full){stopCredits();return priorRetry(full);};
+function correctMusicReference(){
+ const footer=document.getElementById('soundtrack-credits72');
+ if(!footer)return;
+ for(const node of footer.querySelectorAll('div')){
+   for(const child of node.childNodes){
+     if(child.nodeType!==3)continue;
+     if(child.textContent.includes('Gravação não incorporada') || child.textContent.includes('A gravação não foi incluída')){
+       child.textContent=hasPersonalSong?' · Reprodução do MP3 pessoal instalado no navegador.':' · Disponível para reprodução após importar o MP3 pessoal.';
+     }
+   }
+ }
+}
+boot.then(correctMusicReference).catch(()=>{});
 const older=document.getElementById('spare-ref93');
 if(older)older.textContent='Spare Hearts — Exit Mouse (CatGhost) · Música dos agradecimentos, quando instalada pelo jogador.';
 window.__teste94={
