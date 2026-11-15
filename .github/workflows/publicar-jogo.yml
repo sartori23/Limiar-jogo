@@ -884,6 +884,16 @@ jobs:
           grep -q 'id="player-release-style"' site/index.html
           grep -q 'Versão 96 ·' site/teste96.html
           ! grep -q 'Escolha três perguntas' site/index.html
+          grep -q 'RECOMEÇAR JOGO' site/index.html
+          grep -q 'id="pause-commands"' site/index.html
+          grep -q 'id="resume-btn"' site/index.html
+          for id in sky gate scene2 scene3; do
+            if grep -q "pause-${id}" site/index.html; then
+              echo "ERRO: teleporte ${id} ainda presente no jogo público"
+              exit 1
+            fi
+          done
+          ! grep -q 'RECOMEÇAR TESTE' site/index.html
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
