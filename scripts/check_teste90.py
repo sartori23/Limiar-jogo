@@ -37,8 +37,18 @@ for token in ["ceu:{file:'ceu.ogg',gain:.12}","prianteLatched?290:175",
               "const tau=target>next?1.15:.90"]:
     assert token in sound,token
 assert "if(window.__soundtrackTest72?.status?.().active==='ceu')return;" in html
-assert "ceu:.12" in (site/'teste89.js').read_text(encoding='utf8')
+assert "corrimão superior esquerdo" not in html, 'Faixa fantasma esquerda ainda presente'
+assert "corrimão superior direito" not in html, 'Faixa fantasma direita ainda presente'
+for obstacle in ("{name:'estante superior esquerda'","{name:'parede direita janela'",
+                 "{name:'mesa da galeria esquerda central'","{name:'cadeira direita inferior'"):
+    assert obstacle in html,'Colisão válida foi retirada: '+obstacle
+assert "ceu:.12" in (site/'teste90.js').read_text(encoding='utf8')
+assert "ceu:.31" in (site/'teste89.js').read_text(encoding='utf8'), 'Teste 89 não pode ser alterado'
 finale=(site/'finale-teste90.js').read_text(encoding='utf8')
+assert 'hint-side90' in finale and 'hint-left90' in finale and 'hint-right90' in finale
+assert 'top:42%' in finale and 'width:23%' in finale
+assert 'CORRA!<small>' in finale
+
 for marker in ['closingSpeedBonus=158*finalStretch','FINALE.manY>6520',
                'FINALE.runHintHideAt=gameTime+1.25']:
     assert marker in finale,marker
