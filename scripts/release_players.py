@@ -28,6 +28,9 @@ replace_once("O LABIRINTO<br><i>ENTRE O QUE RESTOU</i>",
              "NO LIMIAR<br><i>DO FINITO</i>", "Título principal da abertura")
 
 # A estrutura de perguntas e a progressão de Lumini continuam intactas.
+replace_once("    'Se deseja respostas, pequeno Polarium, concederei três. Escolha com cuidado.'",
+             "    'Não espere encontrar todas as respostas aqui, pequeno Polarium.'",
+             "Fala de Lumini sobre três perguntas")
 replace_once("Escolha três perguntas. Cada resposta será dada uma única vez.",
              "Escolha o que deseja perguntar.", "Mensagem de Lumini")
 replace_once("'Perguntas respondidas: '+luminiAsked.size+' / 3 · Escolha uma pergunta ainda não feita.'",
