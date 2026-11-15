@@ -24,7 +24,7 @@ with socketserver.TCPServer(('127.0.0.1',0),Quiet) as server:
         browser.set_page_load_timeout(75)
         browser.get(f'http://127.0.0.1:{server.server_address[1]}/teste96.html')
         WebDriverWait(browser,60).until(lambda b:b.execute_script(
-            'return !!(window.__teste96 && window.__teste95b && window.__teste87 && window.__finaleTest71)'))
+            'return !!(window.__teste96 && window.__teste95B && window.__teste87 && window.__finaleTest71)'))
         start=browser.execute_script("""
           setState('play');
           enterScene1();
@@ -92,7 +92,7 @@ with socketserver.TCPServer(('127.0.0.1',0),Quiet) as server:
         assert result['speaker']=='P' and 'Sete' in result['note'],result
         preserve=browser.execute_script("""
           return {runReady:window.__teste95a?.status?.()?.readyCount??null,
-            mp3:!!window.__teste95b,
+            mp3:!!window.__teste95B,
             sameAssets:!!window.__prianteTest78,errors:window.__teste84.status().errors};
         """)
         assert preserve['mp3'] and preserve['sameAssets'] and not preserve['errors'],preserve
