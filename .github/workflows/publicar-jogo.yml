@@ -34,6 +34,12 @@ on:
       - 'scripts/teste89.js'
       - 'scripts/check_teste89.py'
       - 'scripts/browser_smoke89.py'
+      - 'scripts/build_p90.py'
+      - 'scripts/patch_audio90.py'
+      - 'scripts/patch_library_hint90.py'
+      - 'scripts/teste90.js'
+      - 'scripts/check_teste90.py'
+      - 'scripts/browser_smoke90.py'
       - 'assets/pietro86_atlases_b64.txt'
       - 'scripts/build_p87.py'
       - 'scripts/teste87.js'
@@ -598,6 +604,44 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/browser_smoke89.py site
+
+      - name: Corrigir sprites, Biblioteca, audio e final - Teste 90
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/build_p90.py site
+          python3 scripts/patch_audio90.py site
+          python3 scripts/patch_library_hint90.py site
+          cp scripts/teste90.js site/teste90.js
+          for file in teste90.js soundtrack-teste90.js finale-teste90.js; do
+            node --check "site/${file}"
+          done
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('site/index.html')
+          html=p.read_text(encoding='utf8')
+          assert html.count('Versão 89 ·')==1, 'Esperado Teste 89'
+          assert html.count('</body>')==1
+          for old,new in [('soundtrack-teste72.js','soundtrack-teste90.js'),
+                          ('finale-teste66.js','finale-teste90.js')]:
+            original=f'<script src="{old}"></script>'
+            assert html.count(original)==1, 'Script ausente: '+old
+            html=html.replace(original,f'<script src="{new}"></script>',1)
+          html=html.replace('</body>','<script src="teste90.js"></script>\n</body>',1)
+          html=html.replace('Versão 89 ·','Versão 90 ·',1)
+          html=html.replace('PRÓLOGO · TESTE 89 ·','PRÓLOGO · TESTE 90 ·',1)
+          html=html.replace('<title>No Limiar do Finito — Teste 89','<title>No Limiar do Finito — Teste 90',1)
+          p.write_text(html,encoding='utf8')
+          Path('site/teste90.html').write_text(html,encoding='utf8')
+          print('Teste 90: corrida, biblioteca, avisos laterais, música suave e perseguidor próximo.')
+          PY
+          python3 scripts/check_teste90.py site
+
+      - name: Testar Teste 90 no navegador Chrome
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/browser_smoke90.py site
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
