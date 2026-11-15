@@ -52,6 +52,19 @@ with socketserver.TCPServer(('127.0.0.1',0),Quiet) as server:
         """)
         assert draw['front'] and draw['left'] and draw['right'],draw
         assert draw['vol']<=.13,draw
+        library=browser.execute_script("""
+          exitScene1(true);
+          enterScene3();
+          const result={
+            openLeft:scene3Can(425,320,false),
+            openRight:scene3Can(545,320,false),
+            shelfBlocked:!scene3Can(260,55,false),
+            tableBlocked:!scene3Can(210,366,false)
+          };
+          exitScene3();
+          return result;
+        """)
+        assert all(library.values()),library
         start=browser.execute_script("""
           setState('final-credits');update(.038);
           return {autoplay:window.__teste90.status().autoStarted,
@@ -69,6 +82,15 @@ with socketserver.TCPServer(('127.0.0.1',0),Quiet) as server:
           let n=0;
           while(state==='dialog'&&n<8){nextDialogue();n++;}
           const fear=window.__finaleTest71.state().phase;
+          const warning=document.querySelector('#final-corridor-hint');
+          const left=warning.querySelector('.hint-left90').getBoundingClientRect();
+          const right=warning.querySelector('.hint-right90').getBoundingClientRect();
+          const viewport=document.querySelector('#viewport').getBoundingClientRect();
+          const hintSides={
+            visible:warning.classList.contains('visible'),
+            leftEdge:left.right<viewport.left+viewport.width*.39,
+            rightEdge:right.left>viewport.left+viewport.width*.61
+          };
           heldKeys.add('s');heldKeys.add('shift');
           let caught=null;
           for(let i=0;i<370;i++){
@@ -81,14 +103,16 @@ with socketserver.TCPServer(('127.0.0.1',0),Quiet) as server:
             }
           }
           heldKeys.clear();
-          return {phase,fear,caught};
+          return {phase,fear,caught,hintSides};
         """)
         assert scene['phase']=='confront' and scene['fear']=='fear',scene
+        assert all(scene['hintSides'].values()),scene['hintSides']
         assert scene['caught'] is not None,scene
         assert scene['caught']['gap']<105,scene
         assert scene['caught']['manY']<6520,scene
-        data={'v':90,'sprites':draw,'youtube_credit_attempt':start,
-              'capture':scene['caught'],'youtube_audio_guaranteed':False}
+        data={'v':90,'sprites':draw,'library':library,'youtube_credit_attempt':start,
+              'capture':scene['caught'],'hintSides':scene['hintSides'],
+              'youtube_audio_guaranteed':False}
         (root/'qa_navegador90.json').write_text(json.dumps(data,ensure_ascii=False,indent=2),encoding='utf8')
         print('BROWSER 90 OK: 3 direções corrida, Céu baixo, YouTube iniciado nos créditos, captura a <105px.')
     except Exception:
