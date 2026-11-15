@@ -61,6 +61,9 @@ on:
       - 'scripts/build_spare95b.py'
       - 'scripts/teste95b.js'
       - 'scripts/browser_smoke95b.py'
+      - 'scripts/teste96.js'
+      - 'scripts/check_teste96.py'
+      - 'scripts/browser_smoke96.py'
       - 'assets/**'
       - 'assets/pietro86_atlases_b64.txt'
       - 'scripts/build_p87.py'
@@ -842,6 +845,33 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/browser_smoke95b.py site
+
+      - name: Teste 96 — transe coletivo na Biblioteca e descricoes renovadas
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp scripts/teste96.js site/teste96.js
+          node --check site/teste96.js
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('site/index.html')
+          s=p.read_text(encoding='utf8')
+          assert s.count('Versão 95B ·')==1, 'Base esperada: 95B estavel'
+          assert s.count('</body>')==1
+          s=s.replace('</body>','<script src="teste96.js"></script>\n</body>',1)
+          s=s.replace('Versão 95B ·','Versão 96 ·',1)
+          s=s.replace('PRÓLOGO · TESTE 95B ·','PRÓLOGO · TESTE 96 ·',1)
+          s=s.replace('<title>No Limiar do Finito — Teste 95B','<title>No Limiar do Finito — Teste 96',1)
+          p.write_text(s,encoding='utf8')
+          Path('site/teste96.html').write_text(s,encoding='utf8')
+          PY
+          python3 scripts/check_teste96.py site
+
+      - name: Teste 96 — verificacao de enigma e falas no Chrome
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/browser_smoke96.py site
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
