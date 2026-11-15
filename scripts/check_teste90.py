@@ -42,7 +42,7 @@ assert "corrimão superior direito" not in html, 'Faixa fantasma direita ainda p
 for obstacle in ("{name:'estante superior esquerda'","{name:'parede direita janela'",
                  "{name:'mesa da galeria esquerda central'","{name:'cadeira direita inferior'"):
     assert obstacle in html,'Colisão válida foi retirada: '+obstacle
-assert "ceu:.12" in (site/'teste90.js').read_text(encoding='utf8')
+assert "soundtrack90.tracks.ceu.gain=.12" in (site/'teste90.js').read_text(encoding='utf8')
 assert "ceu:.31" in (site/'teste89.js').read_text(encoding='utf8'), 'Teste 89 não pode ser alterado'
 finale=(site/'finale-teste90.js').read_text(encoding='utf8')
 assert 'hint-side90' in finale and 'hint-left90' in finale and 'hint-right90' in finale
