@@ -49,6 +49,9 @@ on:
       - 'scripts/teste92.js'
       - 'scripts/check_teste92.py'
       - 'scripts/browser_smoke92.py'
+      - 'scripts/teste93.js'
+      - 'scripts/check_teste93.py'
+      - 'scripts/browser_smoke93.py'
       - 'assets/pietro86_atlases_b64.txt'
       - 'scripts/build_p87.py'
       - 'scripts/teste87.js'
@@ -712,6 +715,34 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/browser_smoke92.py site
+
+      - name: Aplicar Teste 93 — corrida final, legendas e créditos discretos
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp scripts/teste93.js site/teste93.js
+          node --check site/teste93.js
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('site/index.html')
+          html=p.read_text(encoding='utf8')
+          assert html.count('Versão 92 ·')==1,'Base deve ser o Teste 92'
+          assert html.count('</body>')==1
+          html=html.replace('</body>','<script src="teste93.js"></script>\n</body>',1)
+          html=html.replace('Versão 92 ·','Versão 93 ·',1)
+          html=html.replace('PRÓLOGO · TESTE 92 ·','PRÓLOGO · TESTE 93 ·',1)
+          html=html.replace('<title>No Limiar do Finito — Teste 92','<title>No Limiar do Finito — Teste 93',1)
+          p.write_text(html,encoding='utf8')
+          Path('site/teste93.html').write_text(html,encoding='utf8')
+          print('TESTE 93: sprites aprovados via launcher privado, fonte de terror e créditos com música local.')
+          PY
+          python3 scripts/check_teste93.py site
+
+      - name: Teste 93 — validar no navegador Chrome
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/browser_smoke93.py site
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
