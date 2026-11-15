@@ -32,6 +32,11 @@ replace_once(
  "",
  "tela inicial"
 )
+replace_once(
+ "                <span>Correr</span><kbd>SHIFT</kbd>",
+ "                <span>Correr (somente na perseguição final)</span><kbd>SHIFT</kbd>",
+ "painel de comandos"
+)
 # Remover os dois componentes de 89 e 90 responsáveis pelo player YouTube
 # e pelo botão manual. Versões anteriores permanecem disponíveis.
 replace_once('<script src="teste89.js"></script>\n','',"remove iframe YouTube 89")
