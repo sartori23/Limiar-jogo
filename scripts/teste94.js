@@ -73,6 +73,7 @@ function useSong(blob){
  privateSong.preload='auto';privateSong.loop=true;privateSong.volume=.80;
  privateSong.onerror=()=>{cacheError='Spare Hearts não pôde ser decodificada pelo navegador';};
  hasPersonalSong=true;audioReady=true;
+ musicButton.hidden=true;
 }
 const style=document.createElement('style');
 style.textContent=[
@@ -100,7 +101,7 @@ mp3input.onchange=async()=>{
  try{
   await saveAsset(AUDIO_KEY,f);
   useSong(f);
-  musicButton.textContent='Spare Hearts instalada!';
+  musicButton.textContent='Spare Hearts instalada!';musicButton.hidden=true;
   if(state==='final-credits')startCredits();
  }catch(e){cacheError=String(e);musicButton.textContent='Falha ao instalar o MP3';}
 };
@@ -160,7 +161,7 @@ async function restoreAssets(){
    tasks.push(getAsset(AUDIO_KEY).then(v=>{if(v)useSong(v)}));
    await Promise.all(tasks);
    if(hasPersonalSong){
-     musicButton.textContent='Spare Hearts instalada ✓';
+     musicButton.textContent='Spare Hearts instalada ✓';musicButton.hidden=true;
    }
  }catch(e){cacheError=String(e);}
 }
@@ -181,13 +182,15 @@ async function install(msg){
  const blob=decodeBase64DataUrl(data);
  await saveAsset(AUDIO_KEY,blob);
  useSong(blob);importedAt=Date.now();
- musicButton.textContent='Spare Hearts instalada ✓';
+ musicButton.textContent='Spare Hearts instalada ✓';musicButton.hidden=true;
  return {directions:installedDirs.size,bytes:blob.size};
 }
 window.addEventListener('message',async e=>{
  if(!window.opener || e.source!==window.opener)return;
  const msg=e.data;
- if(!msg||msg.protocol!==VER||msg.type!=='install')return;
+ if(!msg||msg.protocol!==VER)return;
+ if(msg.type==='prepare'){notifyReady();return;}
+ if(msg.type!=='install')return;
  try{
    const result=await install(msg);
    window.opener.postMessage({protocol:VER,type:'installed',...result},'*');
@@ -235,10 +238,10 @@ function startCredits(){
  creditsCalled=true;
  privateSong.currentTime=0;privateSong.volume=.84;
  privateSong.play().then(()=>{
-   creditPlaying=true;musicButton.textContent='♪ Spare Hearts';
+   creditPlaying=true;musicButton.textContent='♪ Spare Hearts';musicButton.hidden=true;
  }).catch(e=>{
    creditPlaying=false;cacheError='Reprodução bloqueada: '+String(e);
-   musicButton.textContent='▶ Ativar Spare Hearts';
+   musicButton.textContent='▶ Ativar Spare Hearts';musicButton.hidden=false;
  });
 }
 priorUpdate&& (update=function(dt){
@@ -249,7 +252,7 @@ priorUpdate&& (update=function(dt){
      if(!creditsCalled)startCredits();
      if(window.__soundtrackTest72?.tracks?.creditos)window.__soundtrackTest72.tracks.creditos.gain=0;
    }else{
-     musicButton.textContent='Escolher MP3 Spare Hearts (uma vez)';
+     musicButton.textContent='Escolher MP3 Spare Hearts (uma vez)';musicButton.hidden=false;
    }
  }else if(creditsCalled||creditPlaying){
    stopCredits();
