@@ -40,6 +40,10 @@ on:
       - 'scripts/teste90.js'
       - 'scripts/check_teste90.py'
       - 'scripts/browser_smoke90.py'
+      - 'scripts/patch_teste91.py'
+      - 'scripts/teste91.js'
+      - 'scripts/check_teste91.py'
+      - 'scripts/browser_smoke91.py'
       - 'assets/pietro86_atlases_b64.txt'
       - 'scripts/build_p87.py'
       - 'scripts/teste87.js'
@@ -642,6 +646,34 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/browser_smoke90.py site
+
+      - name: Andar nos mapas e correr somente no final - Teste 91
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/patch_teste91.py site
+          cp scripts/teste91.js site/teste91.js
+          node --check site/teste91.js
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('site/index.html')
+          html=p.read_text(encoding='utf8')
+          assert html.count('Versão 90 ·')==1, 'Base esperada: Teste 90'
+          assert html.count('</body>')==1
+          html=html.replace('</body>','<script src="teste91.js"></script>\n</body>',1)
+          html=html.replace('Versão 90 ·','Versão 91 ·',1)
+          html=html.replace('PRÓLOGO · TESTE 90 ·','PRÓLOGO · TESTE 91 ·',1)
+          html=html.replace('<title>No Limiar do Finito — Teste 90','<title>No Limiar do Finito — Teste 91',1)
+          p.write_text(html,encoding='utf8')
+          Path('site/teste91.html').write_text(html,encoding='utf8')
+          PY
+          python3 scripts/check_teste91.py site
+
+      - name: Validar a nova experiencia no Chrome - Teste 91
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/browser_smoke91.py site
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
