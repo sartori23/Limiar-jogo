@@ -23,7 +23,7 @@ with socketserver.TCPServer(('127.0.0.1',0),Quiet) as server:
   driver.set_page_load_timeout(70)
   driver.get(f'http://127.0.0.1:{server.server_address[1]}/teste95b.html')
   WebDriverWait(driver,60).until(lambda b:b.execute_script(
-      'return !!(window.__teste95A && window.__teste95B && window.__finaleTest71 && window.__teste94)'))
+      'return !!(window.__teste95A && window.__teste95B && window.__finaleTest71 && !window.__teste94)'))
   running=driver.execute_script("""
     audioOn=true;setState('play');
     const o=window.__teste87.status;
@@ -55,12 +55,12 @@ with socketserver.TCPServer(('127.0.0.1',0),Quiet) as server:
     return {music:window.__teste95B.status(),
       creditGain:window.__soundtrackTest72.tracks.creditos.gain,
       noYoutube:!document.getElementById('spare-player89'),
-      oldLocalHelperHidden:!!document.getElementById('spare-local94'),
+      oldLocalHelperRemoved:!document.getElementById('spare-local94'),
       errors:window.__teste84.status().errors};
   """)
   assert 261<credits['music']['duration']<263,credits
   assert credits['music']['played'] and credits['creditGain']==0,credits
-  assert credits['noYoutube'] and not credits['errors'],credits
+  assert credits['noYoutube'] and credits['oldLocalHelperRemoved'] and not credits['errors'],credits
   report={'run':running,'voice':singing,'credits':credits}
   (root/'qa95b.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf8')
   print('BROWSER95B OK: 32 sprites oficiais; cantiga toca e avança; MP3 original 262s reproduz nos créditos; trilha antiga silenciada!')
