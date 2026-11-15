@@ -47,7 +47,7 @@ css="""
     '#final-corridor-hint .hint-side90 small{font-size:9px;letter-spacing:.015em;line-height:1.5;white-space:normal}',
     '@media(max-width:720px){#final-corridor-hint .hint-side90{width:28%}#final-corridor-hint .hint-left90{left:0}#final-corridor-hint .hint-right90{right:0}}',
     '@media(max-width:480px){#final-corridor-hint .hint-side90{width:30%;font-size:17px}#final-corridor-hint .hint-side90 small{font-size:8px}}'
-  ].join('\\n');
+  ].join(' ');
 """
 anchor="  document.head.appendChild(styles);"
 assert s.count(anchor)==1, 'Ponto de inserção CSS não encontrado'
