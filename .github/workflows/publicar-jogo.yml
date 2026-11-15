@@ -52,6 +52,9 @@ on:
       - 'scripts/teste93.js'
       - 'scripts/check_teste93.py'
       - 'scripts/browser_smoke93.py'
+      - 'scripts/teste94.js'
+      - 'scripts/check_teste94.py'
+      - 'scripts/browser_smoke94.py'
       - 'assets/pietro86_atlases_b64.txt'
       - 'scripts/build_p87.py'
       - 'scripts/teste87.js'
@@ -743,6 +746,40 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/browser_smoke93.py site
+
+      - name: Implementar uso online de musica e corrida aprovadas - Teste 94
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp scripts/teste94.js site/teste94.js
+          node --check site/teste94.js
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('site/index.html')
+          h=p.read_text(encoding='utf8')
+          assert h.count('Versão 93 ·')==1,'Base esperada: Teste 93'
+          assert h.count('</body>')==1
+          h=h.replace('</body>','<script src="teste94.js"></script>\n</body>',1)
+          h=h.replace('Versão 93 ·','Versão 94 ·',1)
+          h=h.replace('PRÓLOGO · TESTE 93 ·','PRÓLOGO · TESTE 94 ·',1)
+          h=h.replace('<title>No Limiar do Finito — Teste 93','<title>No Limiar do Finito — Teste 94',1)
+          p.write_text(h,encoding='utf8')
+          Path('site/teste94.html').write_text(h,encoding='utf8')
+          PY
+          python3 scripts/check_teste94.py site
+
+      - name: Testar a música pessoal, corrida e cantiga no Chrome - Teste 94
+        shell: bash
+        run: |
+          set -euo pipefail
+          # MP3 sintetizado apenas para o teste; removido antes da publicacao.
+          ffmpeg -hide_banner -loglevel error -nostdin -y \
+            -f lavfi -i 'sine=frequency=220:sample_rate=44100' \
+            -t 70 -ac 2 -c:a libmp3lame -b:a 320k site/smoke94.mp3
+          test "$(wc -c < site/smoke94.mp3)" -gt 2000000
+          python3 scripts/browser_smoke94.py site
+          rm site/smoke94.mp3
+          echo "TESTE 94: cache no navegador e áudio isolado validados."
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
