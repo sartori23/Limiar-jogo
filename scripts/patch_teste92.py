@@ -41,8 +41,8 @@ single(
 'atalhos do menu de Lumini'
 )
 single(
-''' <span>·</span> ESC <span>—</span> PAUSAR''',
-''' <span>·</span> SHIFT <span>—</span> CORRER <span>·</span> ESC <span>—</span> PAUSAR''',
+''' <span>·</span> E <span>—</span> INTERAGIR''',
+''' <span>·</span> SHIFT <span>—</span> CORRER <span>·</span> E <span>—</span> INTERAGIR''',
 'dica de comando restaurada'
 )
 single(
