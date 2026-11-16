@@ -1,41 +1,127 @@
-/* Menu integrado à arte final aprovada — escopo exclusivo da abertura. */
+/* niente da vedere — CSS completo do player.
+ * A imagem de fundo JÁ contém título e as três palavras do menu.
+ * Os botões HTML permanecem acessíveis e clicáveis, mas seus caracteres
+ * não são renderizados novamente sobre a arte original.
+ * A posição utiliza proporções da imagem (960 x 540).
+ */
 #viewport #start-screen:not(.hidden){
-  position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
-  max-width:none!important;max-height:none!important;border:0!important;margin:0!important;
-  padding:0!important;border-radius:0!important;overflow:hidden!important;
-  background:#111016 url('./menu-niente-da-vedere.webp') center / 100% 100% no-repeat!important;
-  box-shadow:none!important;display:block!important;isolation:isolate!important;
+  position:absolute!important;inset:0!important;
+  width:100%!important;height:100%!important;
+  max-width:none!important;max-height:none!important;
+  margin:0!important;padding:0!important;
+  border:0!important;border-radius:0!important;
+  overflow:hidden!important;
+  background:#0c0b11 url('./menu-niente-da-vedere.webp') center center / 100% 100% no-repeat!important;
+  box-shadow:none!important;display:block!important;
+  isolation:isolate!important;
 }
-#viewport #start-screen::before{display:none!important;content:none!important}
-.ndv-visually-hidden{position:absolute!important;width:1px;height:1px;clip:rect(0,0,0,0);overflow:hidden;white-space:nowrap}
-#viewport .ndv-main-menu{position:absolute;z-index:3;left:50%;bottom:4%;transform:translateX(-50%);
- width:min(39%,390px);min-width:225px;max-width:95%;padding:6px 14px;
- display:flex;flex-direction:column;align-items:stretch;gap:1px;
- background:linear-gradient(90deg,transparent,rgba(8,8,12,.81) 18%,rgba(9,8,12,.83) 82%,transparent);
- text-align:center}
-#viewport .ndv-divider{font:13px Georgia,serif;color:#c8a88a;letter-spacing:.14em;opacity:.86;line-height:1.2}
-#viewport .ndv-button{font:600 clamp(14px,2vw,23px)/1.22 Georgia,'Times New Roman',serif!important;
- letter-spacing:.10em!important;color:#ded2c7!important;text-shadow:0 2px 7px #000!important;
- background:transparent!important;border:0!important;padding:5px 3px!important;min-height:31px!important;
- cursor:pointer;transform:none!important;box-shadow:none!important;transition:color .18s ease}
-#viewport .ndv-button:hover,#viewport .ndv-button:focus-visible,#viewport .ndv-button.ndv-selected{
- color:#ffdfaa!important;text-shadow:0 0 10px rgba(239,189,128,.75)!important;outline:0}
-#viewport .ndv-button.ndv-selected::before,#viewport .ndv-button.ndv-selected::after{content:'✦';font-size:.6em;margin:0 9px;color:#edc89f}
-#viewport .ndv-button:disabled{opacity:.42;cursor:not-allowed;color:#aaa1a0!important}
-#viewport .ndv-button:disabled::before,#viewport .ndv-button:disabled::after{content:none}
-#viewport .ndv-options-panel:not(.hidden){position:absolute;z-index:12;left:50%;top:50%;transform:translate(-50%,-50%);
- width:min(440px,88%);padding:24px 28px;max-height:94%;overflow:auto;display:flex;flex-direction:column;gap:13px;
- background:rgba(14,12,20,.97);border:1px solid #a87777;box-shadow:0 18px 80px #000}
-#viewport .ndv-options-panel h3{color:#eddbcd;font:normal 30px Georgia,serif;text-align:center;margin:0 0 8px}
-#viewport .ndv-options-panel button{cursor:pointer;color:#e8d9c8;background:rgba(89,40,54,.4);padding:12px;
- border:1px solid #71545c;font:14px Georgia,serif;letter-spacing:.1em}
-#viewport .ndv-options-panel button:hover,#viewport .ndv-options-panel button:focus-visible{background:rgba(155,63,79,.52);outline:2px solid #d8ad85}
-#viewport .ndv-options-panel p{font:10px/1.8 monospace;color:#baaaad;text-align:center;margin:2px 0}
+#viewport #start-screen::before,
+#viewport #start-screen::after{
+  display:none!important;content:none!important;
+}
+.ndv-visually-hidden{
+  position:absolute!important;width:1px!important;height:1px!important;
+  padding:0!important;margin:-1px!important;overflow:hidden!important;
+  clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;
+}
+
+/* Os centros dos três rótulos impressos na capa estão em
+ * y ≈ 414 / 439 / 466. O grid posiciona seus hitboxes nesses pontos. */
+#viewport #start-screen .ndv-main-menu{
+  position:absolute!important;z-index:10!important;
+  left:50%!important;top:72.6%!important;bottom:auto!important;
+  transform:translateX(-50%)!important;
+  display:grid!important;
+  grid-template-columns:100%!important;
+  grid-template-rows:10% 26.8% 26.8% 26.8% 9.6%!important;
+  align-items:stretch!important;justify-items:stretch!important;
+  width:31%!important;min-width:0!important;max-width:none!important;
+  height:18%!important;min-height:0!important;
+  padding:0!important;margin:0!important;gap:0!important;
+  background:transparent!important;border:0!important;
+  box-shadow:none!important;text-align:center!important;
+}
+#viewport #start-screen .ndv-divider{
+  visibility:hidden!important;opacity:0!important;
+  padding:0!important;margin:0!important;pointer-events:none!important;
+}
+/* Áreas transparentes: o usuário vê uma ÚNICA cópia,
+   a que já faz parte da ilustração aprovada. */
+#viewport #start-screen .ndv-main-menu .ndv-button{
+  display:block!important;position:relative!important;
+  width:100%!important;max-width:none!important;min-width:0!important;
+  height:100%!important;min-height:0!important;
+  margin:0!important;padding:0!important;
+  background:transparent!important;border:1px solid transparent!important;
+  box-shadow:none!important;border-radius:2px!important;
+  opacity:1!important;transform:none!important;
+  color:transparent!important;-webkit-text-fill-color:transparent!important;
+  text-shadow:none!important;
+  font-size:0!important;line-height:0!important;
+  letter-spacing:0!important;
+  cursor:pointer!important;
+  transition:background-color .16s ease, box-shadow .16s ease!important;
+}
+#viewport #start-screen .ndv-main-menu .ndv-button::before,
+#viewport #start-screen .ndv-main-menu .ndv-button::after{
+  content:none!important;display:none!important;
+}
+#viewport #start-screen .ndv-main-menu .ndv-button:disabled{
+  cursor:not-allowed!important;opacity:1!important;
+  background:transparent!important;box-shadow:none!important;
+}
+/* Realce sem sobrepor letras aos rótulos originais. */
+#viewport #start-screen .ndv-main-menu .ndv-button:hover:not(:disabled),
+#viewport #start-screen .ndv-main-menu .ndv-button:focus-visible{
+  background:rgba(185,113,86,.105)!important;
+  box-shadow:inset 0 0 0 1px rgba(207,168,131,.42)!important;
+  outline:1px solid rgba(203,158,119,.22)!important;
+  outline-offset:0!important;
+}
+#viewport #start-screen .ndv-main-menu .ndv-button.ndv-selected:not(:disabled){
+  background:rgba(194,134,91,.055)!important;
+  box-shadow:inset 0 -1px 0 rgba(218,179,137,.25)!important;
+}
+
+/* Painel OPÇÕES: texto aqui é real, não está gravado na imagem. */
+#viewport .ndv-options-panel:not(.hidden){
+  position:absolute!important;z-index:15!important;
+  left:50%!important;top:50%!important;transform:translate(-50%,-50%)!important;
+  width:min(440px,88%)!important;max-height:90%!important;
+  padding:24px 28px!important;overflow-y:auto!important;
+  display:flex!important;flex-direction:column!important;gap:13px!important;
+  background:rgba(14,12,20,.97)!important;border:1px solid #a87777!important;
+  box-shadow:0 18px 80px #000!important;
+}
+#viewport .ndv-options-panel h3{
+  color:#eddbcd;font:normal 30px Georgia,serif!important;
+  text-align:center;margin:0 0 8px;
+}
+#viewport .ndv-options-panel button{
+  cursor:pointer;color:#e8d9c8;background:rgba(89,40,54,.4);
+  padding:12px;border:1px solid #71545c;
+  font:14px Georgia,serif;letter-spacing:.1em;
+}
+#viewport .ndv-options-panel button:hover,
+#viewport .ndv-options-panel button:focus-visible{
+  background:rgba(155,63,79,.52);outline:2px solid #d8ad85;
+}
+#viewport .ndv-options-panel p{
+  font:10px/1.8 monospace;color:#baaaad;text-align:center;margin:2px 0;
+}
 #pause-screen #ndv-return-menu{margin-top:3px}
-@media(max-width:600px){#viewport .ndv-main-menu{min-width:165px;width:48%;bottom:3%;padding:3px 6px}
- #viewport .ndv-button{font-size:clamp(12px,2.7vw,17px)!important;min-height:24px!important;padding:2px!important}
- #viewport .ndv-divider{font-size:9px}}
-@media(prefers-reduced-motion:reduce){#viewport .ndv-button{transition:none!important}}
+@media(max-width:600px){
+  /* Todos os valores seguem a arte escalada, não pixels do navegador. */
+  #viewport #start-screen .ndv-main-menu{
+    top:72.6%!important;width:34%!important;height:18%!important;
+  }
+  #viewport .ndv-options-panel:not(.hidden){
+    width:92%!important;padding:17px 18px!important;gap:9px!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  #viewport #start-screen .ndv-button{transition:none!important}
+}
 
 /* ===============================================================
  * NIENTE — interface de jogo (sem molduras da antiga página web)
