@@ -926,6 +926,15 @@ jobs:
           assert html.count('id="ndv-options"') == 1
           assert html.count('id="pause-screen"') == 1
           assert html.count('menu-niente.js') == 1
+          assert 'class="masthead"' not in html, 'Cabeçalho antigo ainda aparece'
+          assert 'class="footer-left"' not in html, 'Status antigo ainda aparece'
+          assert html.count('id="status"') == 1, 'Atualizações do HUD exigem status oculto'
+          assert html.count('id="ndv-pause-audio"') == 1
+          assert html.count('id="ndv-pause-fullscreen"') == 1
+          assert '<summary>OPÇÕES' in html, 'Opções da pausa ausentes'
+          assert html.index('id="resume-btn"') < html.index('id="pause-restart"') < html.index('id="ndv-return-menu"')
+          assert 'RECOMEÇAR TESTE' not in html
+          assert 'ATAlHO DE TESTE' not in html.upper()
           print('QA MENU: capa e botões publicados; gameplay e testes históricos separados.')
           PY
 
