@@ -54,8 +54,10 @@ s=s.replace(inner,extras+'\n              '+inner,1)
 # As duas faixas são decoração web anterior, não elementos de gameplay.
 s,n=re.subn(r'\s*<header class="masthead">.*?</header>', '', s,count=1,flags=re.S)
 assert n==1,'Cabeçalho externo não localizado'
-s,n=re.subn(r'\s*<div class="footer-left">.*?</div>', '', s,count=1,flags=re.S)
+s,n=re.subn(r'\s*<div class="footer-left">.*?</div>', '\n      <span id="status" class="ndv-hidden-status" aria-hidden="true"></span>', s,count=1,flags=re.S)
 assert n==1,'Faixa inferior esquerda não localizada'
+# Status permanece em DOM pois as funções de HUD o atualizam; só fica oculto.
+assert s.count('id="status"')==1
 s=s.replace('Fim do Teste 21 · outras memórias permanecem em desenvolvimento',
             'Toda saída deixa algo para trás.',1)
 # Identidade visível ao jogador; nomes técnicos internos permanecem intactos.
