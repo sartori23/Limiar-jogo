@@ -1,0 +1,38 @@
+/* Menu integrado à arte final aprovada — escopo exclusivo da abertura. */
+#viewport #start-screen:not(.hidden){
+  position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
+  max-width:none!important;max-height:none!important;border:0!important;margin:0!important;
+  padding:0!important;border-radius:0!important;overflow:hidden!important;
+  background:#111016 url('./menu-niente-da-vedere.webp') center / 100% 100% no-repeat!important;
+  box-shadow:none!important;display:block!important;isolation:isolate!important;
+}
+#viewport #start-screen::before{display:none!important;content:none!important}
+.ndv-visually-hidden{position:absolute!important;width:1px;height:1px;clip:rect(0,0,0,0);overflow:hidden;white-space:nowrap}
+#viewport .ndv-main-menu{position:absolute;z-index:3;left:50%;bottom:4%;transform:translateX(-50%);
+ width:min(39%,390px);min-width:225px;max-width:95%;padding:6px 14px;
+ display:flex;flex-direction:column;align-items:stretch;gap:1px;
+ background:linear-gradient(90deg,transparent,rgba(8,8,12,.81) 18%,rgba(9,8,12,.83) 82%,transparent);
+ text-align:center}
+#viewport .ndv-divider{font:13px Georgia,serif;color:#c8a88a;letter-spacing:.14em;opacity:.86;line-height:1.2}
+#viewport .ndv-button{font:600 clamp(14px,2vw,23px)/1.22 Georgia,'Times New Roman',serif!important;
+ letter-spacing:.10em!important;color:#ded2c7!important;text-shadow:0 2px 7px #000!important;
+ background:transparent!important;border:0!important;padding:5px 3px!important;min-height:31px!important;
+ cursor:pointer;transform:none!important;box-shadow:none!important;transition:color .18s ease}
+#viewport .ndv-button:hover,#viewport .ndv-button:focus-visible,#viewport .ndv-button.ndv-selected{
+ color:#ffdfaa!important;text-shadow:0 0 10px rgba(239,189,128,.75)!important;outline:0}
+#viewport .ndv-button.ndv-selected::before,#viewport .ndv-button.ndv-selected::after{content:'✦';font-size:.6em;margin:0 9px;color:#edc89f}
+#viewport .ndv-button:disabled{opacity:.42;cursor:not-allowed;color:#aaa1a0!important}
+#viewport .ndv-button:disabled::before,#viewport .ndv-button:disabled::after{content:none}
+#viewport .ndv-options-panel:not(.hidden){position:absolute;z-index:12;left:50%;top:50%;transform:translate(-50%,-50%);
+ width:min(440px,88%);padding:24px 28px;max-height:94%;overflow:auto;display:flex;flex-direction:column;gap:13px;
+ background:rgba(14,12,20,.97);border:1px solid #a87777;box-shadow:0 18px 80px #000}
+#viewport .ndv-options-panel h3{color:#eddbcd;font:normal 30px Georgia,serif;text-align:center;margin:0 0 8px}
+#viewport .ndv-options-panel button{cursor:pointer;color:#e8d9c8;background:rgba(89,40,54,.4);padding:12px;
+ border:1px solid #71545c;font:14px Georgia,serif;letter-spacing:.1em}
+#viewport .ndv-options-panel button:hover,#viewport .ndv-options-panel button:focus-visible{background:rgba(155,63,79,.52);outline:2px solid #d8ad85}
+#viewport .ndv-options-panel p{font:10px/1.8 monospace;color:#baaaad;text-align:center;margin:2px 0}
+#pause-screen #ndv-return-menu{margin-top:3px}
+@media(max-width:600px){#viewport .ndv-main-menu{min-width:165px;width:48%;bottom:3%;padding:3px 6px}
+ #viewport .ndv-button{font-size:clamp(12px,2.7vw,17px)!important;min-height:24px!important;padding:2px!important}
+ #viewport .ndv-divider{font-size:9px}}
+@media(prefers-reduced-motion:reduce){#viewport .ndv-button{transition:none!important}}
