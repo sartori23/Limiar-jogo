@@ -21,6 +21,16 @@ $id('ndv-option-audio').addEventListener('click',()=>{$id('audio-toggle').click(
  $id('ndv-option-audio').textContent='ÁUDIO: '+(audioOn?'LIGADO':'DESLIGADO');});
 $id('ndv-option-fullscreen').addEventListener('click',()=>{$id('fullscreen').click();});
 $id('ndv-option-back').addEventListener('click',()=>setOptionPanel(false));
+// Opções da pausa: reutilizam exatamente os controles nativos do jogo.
+const pauseAudio=$id('ndv-pause-audio'),pauseFullscreen=$id('ndv-pause-fullscreen');
+const pauseDetails=$id('pause-commands');
+if(!pauseAudio||!pauseFullscreen||!pauseDetails)throw Error('Opções da pausa ausentes');
+function syncPauseAudio(){pauseAudio.textContent='ÁUDIO: '+(audioOn?'LIGADO':'DESLIGADO');}
+pauseAudio.addEventListener('click',()=>{$id('audio-toggle').click();syncPauseAudio();});
+pauseFullscreen.addEventListener('click',()=>{$id('fullscreen').click();});
+pauseDetails.addEventListener('toggle',()=>{if(pauseDetails.open)syncPauseAudio();});
+returnMenu.addEventListener('click',()=>{pauseDetails.open=false;});
+
 document.addEventListener('keydown',e=>{
  if(state!=='start')return;
  if(optionsOpen){if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();setOptionPanel(false);}return;}
