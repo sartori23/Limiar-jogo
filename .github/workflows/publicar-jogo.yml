@@ -67,6 +67,7 @@ on:
       - 'scripts/menu_niente.py'
       - 'scripts/menu-niente.css'
       - 'scripts/menu-niente.js'
+      - 'scripts/browser_menu_niente.py'
       - 'scripts/release_players.py'
       - 'assets/**'
       - 'assets/pietro86_atlases_b64.txt'
@@ -937,6 +938,12 @@ jobs:
           assert 'ATAlHO DE TESTE' not in html.upper()
           print('QA MENU: capa e botões publicados; gameplay e testes históricos separados.')
           PY
+
+      - name: Testar menu Niente sem sobreposição no Chrome
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/browser_menu_niente.py site
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
