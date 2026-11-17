@@ -68,6 +68,9 @@ on:
       - 'scripts/menu-niente.css'
       - 'scripts/menu-niente.js'
       - 'scripts/browser_menu_niente.py'
+      - 'scripts/backrooms-easteregg.js'
+      - 'scripts/build_backrooms.py'
+      - 'scripts/browser_smoke_backrooms.py'
       - 'scripts/release_players.py'
       - 'assets/**'
       - 'assets/pietro86_atlases_b64.txt'
@@ -945,6 +948,24 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/browser_menu_niente.py site
+
+      - name: Preparar teste isolado do easter egg Backrooms
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check scripts/backrooms-easteregg.js
+          python3 -m py_compile scripts/build_backrooms.py scripts/browser_smoke_backrooms.py
+          python3 scripts/build_backrooms.py site
+          test -s site/teste-backrooms.html
+          test -s site/backrooms-easteregg.js
+          grep -q 'backrooms-easteregg.js' site/teste-backrooms.html
+          ! grep -q 'backrooms-easteregg.js' site/index.html
+
+      - name: Verificar Backrooms e rota normal no Chrome
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/browser_smoke_backrooms.py site
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
