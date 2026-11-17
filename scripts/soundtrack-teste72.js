@@ -62,6 +62,8 @@
     return false;
   }
   function currentCue(){
+    // Easter egg secreto: apenas o zumbido fluorescente, sem música externa.
+    if(window.__backroomsEasterEgg?.status?.().active)return null;
     // Estes estados vêm antes das salas, pois a cantiga e o final têm prioridade absoluta.
     if(state==='final-end')return null;
     if(state==='final-credits')return 'creditos';
