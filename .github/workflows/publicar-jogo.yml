@@ -68,6 +68,8 @@ on:
       - 'scripts/menu-niente.css'
       - 'scripts/menu-niente.js'
       - 'scripts/browser_menu_niente.py'
+      - 'scripts/backrooms97.js'
+      - 'scripts/browser_backrooms97.py'
       - 'scripts/backrooms-easteregg.js'
       - 'scripts/build_backrooms.py'
       - 'scripts/browser_smoke_backrooms.py'
@@ -966,6 +968,32 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/browser_smoke_backrooms.py site
+
+      - name: Integrar Easter egg Backrooms — versao 97
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp scripts/backrooms97.js site/backrooms97.js
+          node --check site/backrooms97.js
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('site/index.html')
+          s=p.read_text(encoding='utf8')
+          assert s.count('</body>') == 1
+          assert s.count('<script src="menu-niente.js"></script>')==1
+          s=s.replace('</body>','<script src="backrooms97.js"></script>\n</body>',1)
+          p.write_text(s,encoding='utf8')
+          # Identidade pública permanece sem marca de teste.
+          Path('site/teste97.html').write_text(s,encoding='utf8')
+          assert s.count('src="backrooms97.js"')==1
+          assert Path('site/teste96.html').exists()
+          PY
+
+      - name: Verificar Easter egg e corredor original no Chrome
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/browser_backrooms97.py site
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
