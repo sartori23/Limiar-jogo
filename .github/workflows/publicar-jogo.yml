@@ -56,6 +56,8 @@ on:
       - 'scripts/check_teste94.py'
       - 'scripts/browser_smoke94.py'
       - 'scripts/build_p95.py'
+      - 'scripts/animacao-p.html'
+      - 'scripts/browser_animacao_p.py'
       - 'scripts/teste95a.js'
       - 'scripts/browser_smoke95a.py'
       - 'scripts/build_spare95b.py'
@@ -994,6 +996,22 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/browser_backrooms97.py site
+
+      - name: Publicar prévia isolada das animações do Pietro
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp scripts/animacao-p.html site/animacao-p.html
+          test -s site/animacao-p.html
+          grep -q 'PIETRO' site/animacao-p.html
+          for dir in down up left right; do
+            test -s "site/p95_run_${dir}.webp"
+            test -s "site/p87_idle_${dir}.webp"
+            test -s "site/p87_walk_${dir}.webp"
+          done
+          test -s site/p88_idle_up.webp
+          test -s site/p88_walk_up.webp
+          python3 scripts/browser_animacao_p.py site
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
