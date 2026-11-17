@@ -11,10 +11,28 @@ assert s.count('id="start-screen"')==1, 'Tela inicial não encontrada'
 assert s.count('id="pause-screen"')==1, 'Pause não encontrado'
 assert s.count('id="start-btn"')==1, 'Botão original não encontrado'
 assert '<script src="teste96.js"></script>' in s, 'Base 96 esperada'
-asset=Path(__file__).resolve().parent.parent/'assets'/'menu-niente-da-vedere.webp'
+# Prepara uma saída PNG de alta resolução para evitar que a versão
+# WebP 960x540 seja ampliada diretamente pelo navegador.
+# Uma arte PNG nativa em assets/ tem prioridade. Até que ela seja
+# adicionada, melhora a apresentação da arte atualmente publicada.
+from PIL import Image, ImageOps, ImageFilter, ImageEnhance
+assets=Path(__file__).resolve().parent.parent/'assets'
+native=assets/'menu-niente-da-vedere.png'
+legacy=assets/'menu-niente-da-vedere.webp'
+asset=native if native.is_file() else legacy
 if not asset.is_file():
-    raise SystemExit(f'Falta a arte aprovada: {asset} (não publicar menu incompleto)')
-shutil.copy2(asset,site/'menu-niente-da-vedere.webp')
+    raise SystemExit(f'Falta a arte do menu: {native} ou {legacy}')
+output=site/'menu-niente-da-vedere.png'
+with Image.open(asset) as im:
+    im=ImageOps.exif_transpose(im).convert('RGB')
+    if im.size!=(1920,1080):
+        im=ImageOps.fit(im,(1920,1080),method=Image.Resampling.LANCZOS,centering=(.5,.5))
+        # A recuperação de nitidez é moderada: bordas mais legíveis,
+        # sem falsamente prometer detalhes que não existiam no WebP.
+        im=im.filter(ImageFilter.UnsharpMask(radius=1.2,percent=115,threshold=3))
+    im.save(output,format='PNG',optimize=True)
+assert output.is_file() and output.stat().st_size>100_000, 'PNG do menu não foi gerado'
+print(f'ARTE: {asset.name} -> {output.name} | 1920x1080, {output.stat().st_size} bytes')
 menu='''<section id="start-screen" class="start-screen panel" role="dialog" aria-label="- niente da vedere - — menu inicial">
   <h2 class="ndv-visually-hidden">- niente da vedere -</h2>
   <nav class="ndv-main-menu" aria-label="Menu inicial">
@@ -65,7 +83,7 @@ s=s.replace('<title>No Limiar do Finito — Jogo', '<title>- niente da vedere -'
 s=s.replace('NO LIMIAR DO <em>FINITO</em>','- niente da <em>vedere -</em>',1)
 s=s.replace('UM FRAGMENTO DO UNIVERSO','UMA HISTÓRIA EM LIMIANTE',1)
 assert '</head>' in s and '</body>' in s
-s=s.replace('</head>','<link rel="stylesheet" href="menu-niente.css">\n</head>',1)
+s=s.replace('</head>','<link rel="stylesheet" href="menu-niente.css?v=hd2">\n</head>',1)
 s=s.replace('</body>','<script src="menu-niente.js"></script>\n</body>',1)
 source.write_text(s,encoding='utf-8')
 for name in ('menu-niente.css','menu-niente.js'):
