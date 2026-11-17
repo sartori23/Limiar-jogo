@@ -11,7 +11,7 @@
   margin:0!important;padding:0!important;
   border:0!important;border-radius:0!important;
   overflow:hidden!important;
-  background:#0c0b11 url('./menu-niente-da-vedere.webp') center center / 100% 100% no-repeat!important;
+  background:#0c0b11 url('./menu-niente-da-vedere.png') center center / cover no-repeat!important;\n  image-rendering:auto!important;\n  filter:none!important;
   box-shadow:none!important;display:block!important;
   isolation:isolate!important;
 }
