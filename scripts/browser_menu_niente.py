@@ -39,13 +39,16 @@ with socketserver.TCPServer(("127.0.0.1",0),Server) as server:
                 font:s.fontSize,fill:s.webkitTextFillColor,opacity:s.opacity,
                 disabled:el.disabled,visible:r.height>5};
             });
-            const bgStyle=getComputedStyle(bg);\n            const style=bgStyle.backgroundImage;
+            const bgStyle=getComputedStyle(bg);
+            const style=bgStyle.backgroundImage;
             return {buttons,style,imageLoad:!!style.includes('menu-niente-da-vedere.png'),
-              oldTitle:!!document.querySelector('.start-rune, #start-screen .meta-label'),\n              imageRendering:bgStyle.imageRendering,backgroundSize:bgStyle.backgroundSize,
+              oldTitle:!!document.querySelector('.start-rune, #start-screen .meta-label'),
+              imageRendering:bgStyle.imageRendering,backgroundSize:bgStyle.backgroundSize,
               sections:document.querySelectorAll('#start-screen').length,
               status:window.__nienteMenu.status()};
         """)
-        assert info["imageLoad"] and not info["oldTitle"],info\n        assert info["backgroundSize"]=="cover" and info["imageRendering"]=="auto",info
+        assert info["imageLoad"] and not info["oldTitle"],info
+        assert info["backgroundSize"]=="cover" and info["imageRendering"]=="auto",info
         assert info["sections"]==1,info
         # Centros das palavras que já são parte da arte 960x540.
         for btn,y in zip(info["buttons"],(414/540,439/540,466/540)):
