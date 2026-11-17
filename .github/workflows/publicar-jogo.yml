@@ -906,7 +906,7 @@ jobs:
           python3 -m py_compile scripts/menu_niente.py
           node --check scripts/menu-niente.js
           python3 scripts/menu_niente.py site
-          test -s site/menu-niente-da-vedere.webp
+          test -s site/menu-niente-da-vedere.png
           grep -q 'id="ndv-continue"' site/index.html
           grep -q 'id="ndv-options"' site/index.html
           grep -q 'id="ndv-return-menu"' site/index.html
@@ -918,8 +918,8 @@ jobs:
           from pathlib import Path
           from PIL import Image
           site=Path('site')
-          with Image.open(site/'menu-niente-da-vedere.webp') as im:
-              assert im.size == (960,540), f'Arte inesperada: {im.size}'
+          with Image.open(site/'menu-niente-da-vedere.png') as im:
+              assert im.size == (1920,1080), f'Arte inesperada: {im.size}'
               im.verify()
           html=(site/'index.html').read_text(encoding='utf8')
           assert html.count('id="start-btn"') == 1
@@ -927,6 +927,7 @@ jobs:
           assert html.count('id="ndv-options"') == 1
           assert html.count('id="pause-screen"') == 1
           assert html.count('menu-niente.js') == 1
+          assert 'menu-niente.css?v=hd2' in html
           assert 'class="masthead"' not in html, 'Cabeçalho antigo ainda aparece'
           assert 'class="footer-left"' not in html, 'Status antigo ainda aparece'
           assert html.count('id="status"') == 1, 'Atualizações do HUD exigem status oculto'
