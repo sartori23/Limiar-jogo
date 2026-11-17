@@ -99,6 +99,17 @@ checkCode=function(){
   if(correct)secretEligible=!visitedAnyRoom;
   return oldCheckCode.apply(this,arguments);
 };
+// O botão CONFIRMAR recebe o handler original no init(); interceptá-lo
+// evita que a validação de clique ignore a flag de rota secreta.
+const confirmKeypad=$('enter-key');
+if(confirmKeypad&&typeof confirmKeypad.onclick==='function'){
+ const oldConfirm=confirmKeypad.onclick;
+ confirmKeypad.onclick=function(){
+  if(state==='keypad'&&inputCode.length===3&&inputCode+'4'===CONFIG.password)
+   secretEligible=!visitedAnyRoom;
+  return oldConfirm.apply(this,arguments);
+ };
+}
 retry=function(full){
  if(full){
   visitedAnyRoom=false;secretEligible=false;
