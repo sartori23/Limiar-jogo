@@ -53,6 +53,7 @@ style.textContent=[
 '#backrooms-screen .br-touch [data-br="left"]{grid-column:1;grid-row:2}',
 '#backrooms-screen .br-touch [data-br="down"]{grid-column:2;grid-row:2}',
 '#backrooms-screen .br-touch [data-br="right"]{grid-column:3;grid-row:2}',
+'body:has(#backrooms-screen:not(.hidden)) .footer{visibility:hidden!important;pointer-events:none!important}',
 '@media(pointer:coarse){#backrooms-screen .br-touch{display:grid}}',
 '@media(max-width:600px){#backrooms-screen .br-hint span{display:none}}'
 ].join('\n');
@@ -83,7 +84,7 @@ const lights=[
 ];
 const held=new Set();
 let visitedAnyRoom=false,secretEligible=false,active=false,finished=false;
-let px=START.x,py=START.y,direction='down',walk=0,sprint=false;
+let px=START.x,py=START.y,direction='down',walk=0,sprint=false,movingNow=false;
 let startedAt=0,finishedAt=0,prev=0,clock=0,nextCrackle=0;
 let soundNodes=null,humGain=null,soundCtx=null;
 const oldCheckCode=checkCode,oldEndGame=endGame,oldRetry=retry;
@@ -195,7 +196,7 @@ function crackle(){
 function startBackrooms(){
  if(active)return;
  active=true;finished=false;held.clear();
- px=START.x;py=START.y;direction='up';walk=0;
+ px=START.x;py=START.y;direction='up';walk=0;movingNow=false;
  startedAt=performance.now()/1000;prev=startedAt;clock=0;nextCrackle=3.4;
  // Exatamente na travessia: sala escura, corte brusco, zumbido fluorescente.
  setState('backrooms');
@@ -288,6 +289,22 @@ function renderTile(x,y,sx,sy,t){
  }
 }
 function drawPlayer(x,y,dir,moving){
+ // Usa o sprite oficial de Pietro do jogo; fallback pixelado caso o atlas
+ // ainda não tenha carregado no navegador.
+ const mode=moving?'walk':'idle';
+ const official=typeof assets!=='undefined'&&assets['p_'+mode];
+ if(official&&official.naturalWidth){
+  const frames=(typeof P_ANIMATION_FRAMES!=='undefined'&&P_ANIMATION_FRAMES[mode])||6;
+  const frame=Math.floor(moving?walk*1.5:clock*4.6)%frames;
+  ctx.save();
+  ctx.translate(Math.floor(x),Math.floor(y));
+  if(dir==='right'){ctx.scale(-1,1);}
+  if(dir==='up')ctx.filter='brightness(.77) saturate(.88)';
+  ctx.imageSmoothingEnabled=false;
+  ctx.drawImage(official,frame*256,0,256,256,-32,-54,64,64);
+  ctx.restore();
+  return;
+ }
  ctx.save();ctx.translate(Math.floor(x),Math.floor(y));
  const bob=moving?Math.sin(walk*2)*2:0;
  ctx.translate(0,bob);
@@ -364,7 +381,7 @@ function draw(now){
  ctx.fillStyle=vign;ctx.fillRect(0,0,cw,ch);
  const fpX=PERSON.x-camX,fpY=PERSON.y-camY;
  drawFigure(fpX,fpY,now);
- drawPlayer(px-camX,py-camY,direction,walk>0);
+ drawPlayer(px-camX,py-camY,direction,movingNow);
  // Leve interferência horizontal, sem esconder o cenário.
  ctx.fillStyle='rgba(63,53,28,'+(.023+.01*Math.sin(now*1.3))+')';
  for(let y=2;y<ch;y+=7)ctx.fillRect(0,y,cw,1);
@@ -379,6 +396,7 @@ function frame(timestamp){
   let dy=Number(held.has('s')||held.has('arrowdown'))-
          Number(held.has('w')||held.has('arrowup'));
   const l=Math.hypot(dx,dy);
+  movingNow=l>0;
   if(l>0){
    dx/=l;dy/=l;
    const speed=held.has('shift')?170:114;
